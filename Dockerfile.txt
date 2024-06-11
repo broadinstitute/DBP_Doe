@@ -1,0 +1,11 @@
+FROM henriqueslab/dl4miceverywhere:u-net_3d_zerocostdl4mic-z2.1.3-d2.0.0-gpu
+
+RUN pip install neptune
+
+WORKDIR /
+
+COPY test.py ./test.py
+COPY Dockerfile.txt ./Dockerfile.txt
+
+
+CMD ["python", "test.py"]
