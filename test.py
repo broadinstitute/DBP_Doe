@@ -948,8 +948,8 @@ model.summary()
     #shutil.rmtree(full_model_path)
     #print(bcolors.WARNING+'!! WARNING: Folder already exists and has been overwritten !!'+bcolors.NORMAL)
 
-#if not os.path.exists(full_model_path):
-    #os.makedirs(full_model_path)
+if not os.path.exists(full_model_path):
+    os.makedirs(full_model_path)
 
 #pdf_export(augmentation = apply_data_augmentation, pretrained_model = resume_training)
 

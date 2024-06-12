@@ -4,8 +4,8 @@ RUN pip install neptune
 
 WORKDIR /
 
-COPY test.py ./test.py
+
 COPY Dockerfile.txt ./Dockerfile.txt
 
 
-CMD ["python", "test.py"]
+CMD ["python"]
