@@ -50,7 +50,7 @@ import matplotlib
 
 from skimage import io
 from shutil import rmtree
-import argparse
+import argparse 
 import imgaug.augmenters as iaa
 import tifffile
 import elasticdeform
@@ -200,7 +200,7 @@ class MultiPageTiffGenerator(Sequence):
             if self.dir_flag:
                 self.source = tifffile.imread(self.source_dir_list[stack_start[0]])
                 if self.binary_target:
-                    self.target = tifffile.imread(self.target_dir_list[stack_start[0]])#.astype(bool)
+                    self.target = tifffile.imread(self.target_dir_list[stack_start[0]]).astype(bool)
                 else:
                     self.target = tifffile.imread(self.target_dir_list[stack_start[0]])
 
@@ -310,7 +310,7 @@ class MultiPageTiffGenerator(Sequence):
 
         if self.dir_flag:
             for i in range(len(self.target_dir_list)):
-                tgt = tifffile.imread(self.target_dir_list[i])#.astype(bool)
+                tgt = tifffile.imread(self.target_dir_list[i]).astype(bool)
                 ones += np.sum(tgt)
                 pixels += tgt.shape[0]*tgt.shape[1]*tgt.shape[2]
         else:
@@ -561,7 +561,7 @@ class Unet3D:
         val_dice_coefficient_history = []
 
 
-        # Open the CSV file in append mode
+        # Open the CSV file in append mode 
         with open(csv_out_name, 'r') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
@@ -675,7 +675,7 @@ class Unet3D:
         return pred_volume
 
 
-#using the argparse for options to add flags
+#using the argparse for options to add flags 
 
 parser = argparse.ArgumentParser(description = "train")
 
@@ -701,7 +701,7 @@ parser.add_argument("--output_directory", type=str, required=False)
 
 args = parser.parse_args()
 
-
+    
 
 #@markdown ###Path to training data:
 training_source = args.training_source #@param {type:"string"}
@@ -725,15 +725,15 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 
 #@markdown <font size = 3>If not, please change:
 
-batch_size =  5 #@param {type:"number"}
-patch_size = (64,64,8) #@param {type:"number"} # in pixels
+batch_size =  1 #@param {type:"number"}
+patch_size = (128,128,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
 validation_split_in_percent = 20 #@param{type:"number"}
 downscaling_in_xy =  1#@param {type:"number"} # in pixels
 
-binary_target = False #@param {type:"boolean"}
+binary_target = True #@param {type:"boolean"}
 
 loss_function = 'weighted_binary_crossentropy' #@param ["weighted_binary_crossentropy", "binary_crossentropy", "categorical_crossentropy", "sparse_categorical_crossentropy", "mean_squared_error", "mean_absolute_error"]
 
@@ -755,7 +755,7 @@ if use_default_advanced_parameters:
     validation_split_in_percent = 20
     downscaling_in_xy = 1
     random_crop = True
-    binary_target = False
+    binary_target = True
     loss_function = 'weighted_binary_crossentropy'
     metrics = 'dice'
     optimizer = 'adam'
@@ -796,7 +796,7 @@ else:
 src_sample = tifffile.imread(training_source_sample)
 src_sample = model._min_max_scaling(src_sample)
 if binary_target:
-    tgt_sample = tifffile.imread(training_target_sample)#.astype(bool)
+    tgt_sample = tifffile.imread(training_target_sample).astype(bool)
 else:
     tgt_sample = tifffile.imread(training_target_sample)
 
@@ -939,11 +939,6 @@ if apply_data_augmentation:
 
 #@markdown ## Show model summary
 model.summary()
-print(train_generator.class_weights)
-print(train_generator.shape)
-#print(train_generator.source_dir_list)
-print(train_generator.source.dtype)
-print(train_generator.source.shape)
 
 #@markdown ##Start training
 
@@ -990,7 +985,7 @@ print("Time elapsed:",hour, "hour(s)",mins,"min(s)",round(sec),"sec(s)")
 #pdf_export(trained = True, augmentation = apply_data_augmentation, pretrained_model = resume_training)
 
 
-###Inspecting loss function
+###Inspecting loss function 
 
 ### Prediction
 
@@ -1042,9 +1037,9 @@ test_source = tifffile.imread(testing_source)
 test_prediction = tifffile.imread(predict_path)
 
 
-### Calculating the best threshold
+### Calculating the best threshold 
 
-#@markdown ##Calculate Intersection over Union and best threshold
+#@markdown ##Calculate Intersection over Union and best threshold 
 prediction = tifffile.imread(predict_path)
 prediction = np.interp(prediction, (prediction.min(), prediction.max()), (0, 255))
 
@@ -1054,7 +1049,7 @@ def iou_vs_threshold(prediction, target):
     threshold_list = []
     IoU_scores_list = []
 
-    for threshold in range(0,256):
+    for threshold in range(0,256): 
         mask = prediction > threshold
 
         intersection = np.logical_and(target, mask)
@@ -1073,7 +1068,7 @@ best_iou = IoU_scores_list[best_thresh]
 
 
 
-### Prediction on unseen images
+### Prediction on unseen images 
 
 ### Do I need prediction code when I train the model?
 
@@ -1088,21 +1083,21 @@ if not os.path.exists(output_directory):
 output_path = os.path.join(output_directory, os.path.splitext(os.path.basename(source_path))[0] + '_predicted.tif')
 #@markdown ###Prediction parameters:
 
-binary_target = False #@param {type:"boolean"}
+binary_target = True #@param {type:"boolean"}
 
 save_probability_map = True #@param {type:"boolean"}
 
 #@markdown <font size = 3>Determine best threshold in Section 5.2.
 
 #### Do I calculate the threshold earlier
-use_calculated_threshold = True #@param {type:"boolean"} #probably I need to calculate the threshold otherwise I will not be able to set a random cutoff threshold. I need threshold only if I need the binary target to be saved
+use_calculated_threshold = True #@param {type:"boolean"} #probably I need to calculate the threshold otherwise I will not be able to set a random cutoff threshold. I need threshold only if I need the binary target to be saved 
 threshold =  200#@param {type:"number"} # how to define the threshold?
 
 
 #@markdown ###Model to be evaluated
 
 # Load parameters
-params = pd.read_csv(os.path.join(full_model_path, 'params.csv'), names=['val'], header=0, index_col=0)
+params = pd.read_csv(os.path.join(full_model_path, 'params.csv'), names=['val'], header=0, index_col=0)   
 model = Unet3D(shape=params.loc['training_shape', 'val'])
 
 if use_calculated_threshold:
@@ -1126,7 +1121,7 @@ if src.nbytes >= 4e9:
     print('The source file exceeds 4GB in memory, prediction will be saved as BigTIFF!')
 
 if binary_target:
-
+    
     prediction = model.predict(src, last_ckpt_path, downscaling=params.loc['downscaling', 'val'], true_patch_size=params.loc['true_patch_size', 'val'])
     prediction = np.interp(prediction, (prediction.min(), prediction.max()), (0, 255))
     prediction = (prediction > threshold).astype('float32')
@@ -1139,14 +1134,14 @@ if not binary_target or save_probability_map:
         prob_map_path = output_path
     else:
         prob_map_path = os.path.splitext(output_path)[0] + '_prob_map.tif'
-
-
+    
+    
 prediction = model.predict(src, last_ckpt_path, downscaling=params.loc['downscaling', 'val'], true_patch_size=params.loc['true_patch_size', 'val'])
 prediction = np.interp(prediction, (prediction.min(), prediction.max()), (0, 255))
 prediction = prediction.reshape(prediction.shape[0], 1, prediction.shape[1], prediction.shape[2])
 tifffile.imwrite(prob_map_path, prediction.astype('float32'), imagej=True)
 
-
+    
 
 src_volume = tifffile.imread(source_path)
 pred_volume = tifffile.imread(output_path)
