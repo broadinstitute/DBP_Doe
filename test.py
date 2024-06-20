@@ -398,7 +398,7 @@ class SampleImageCallback(Callback):
         plt.title('Predicted target')
         plt.axis('off');
 
-        plt.show()
+        #plt.show()
 
         if self.save:
             plt.savefig(self.model_path + '/epoch_' + str(epoch+1) + '.png')
@@ -726,7 +726,7 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 #@markdown <font size = 3>If not, please change:
 
 batch_size =  1 #@param {type:"number"}
-patch_size = (256,256,8) #@param {type:"number"} # in pixels
+patch_size = (128,128,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
@@ -768,7 +768,7 @@ save_best_only = True #@param {type:"boolean"}
 
 #@markdown ###Resume training
 #@markdown <font size = 3>Choose if training was interrupted:
-resume_training = True #@param {type:"boolean"}
+#resume_training = True #@param {type:"boolean"}
 
 
 
@@ -778,13 +778,12 @@ last_ckpt_path=None
 model = Unet3D(shape=training_shape)
 
 #here we check that no model with the same name already exist
-if not resume_training and os.path.exists(full_model_path):
-    print(bcolors.WARNING+'The model folder already exists and will be overwritten.'+bcolors.NORMAL)
+#if not resume_training and os.path.exists(full_model_path):
+    #print(bcolors.WARNING+'The model folder already exists and will be overwritten.'+bcolors.NORMAL)
     # print('!! WARNING: Folder already exists and will be overwritten !!')
     # shutil.rmtree(full_model_path)
-
-# if not os.path.exists(full_model_path):
-#     os.makedirs(full_model_path)
+if not os.path.exists(full_model_path):
+    os.makedirs(full_model_path)
 
 # Show sample image
 if os.path.isdir(training_source):
@@ -1044,7 +1043,7 @@ test_prediction = tifffile.imread(predict_path)
 prediction = tifffile.imread(predict_path)
 prediction = np.interp(prediction, (prediction.min(), prediction.max()), (0, 255))
 
-target = tifffile.imread(testing_target).astype(np.bool)
+target = tifffile.imread(testing_target).astype(bool)
 
 def iou_vs_threshold(prediction, target):
     threshold_list = []
