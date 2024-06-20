@@ -63,7 +63,7 @@ import time
 
 from skimage import io
 import matplotlib
-
+	
 from skimage import io
 from shutil import rmtree
 
@@ -200,7 +200,7 @@ class MultiPageTiffGenerator(Sequence):
             if self.dir_flag:
                 self.source = tifffile.imread(self.source_dir_list[stack_start[0]])
                 if self.binary_target:
-                    self.target = tifffile.imread(self.target_dir_list[stack_start[0]]).astype(bool)
+                    self.target = tifffile.imread(self.target_dir_list[stack_start[0]])#.astype(bool)
                 else:
                     self.target = tifffile.imread(self.target_dir_list[stack_start[0]])
 
@@ -310,7 +310,7 @@ class MultiPageTiffGenerator(Sequence):
 
         if self.dir_flag:
             for i in range(len(self.target_dir_list)):
-                tgt = tifffile.imread(self.target_dir_list[i]).astype(bool)
+                tgt = tifffile.imread(self.target_dir_list[i])#.astype(bool)
                 ones += np.sum(tgt)
                 pixels += tgt.shape[0]*tgt.shape[1]*tgt.shape[2]
         else:
@@ -725,15 +725,15 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 
 #@markdown <font size = 3>If not, please change:
 
-batch_size =  1 #@param {type:"number"}
-patch_size = (256,256,8) #@param {type:"number"} # in pixels
+batch_size =  5 #@param {type:"number"}
+patch_size = (64,64,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
 validation_split_in_percent = 20 #@param{type:"number"}
 downscaling_in_xy =  1#@param {type:"number"} # in pixels
 
-binary_target = True #@param {type:"boolean"}
+binary_target = False #@param {type:"boolean"}
 
 loss_function = 'weighted_binary_crossentropy' #@param ["weighted_binary_crossentropy", "binary_crossentropy", "categorical_crossentropy", "sparse_categorical_crossentropy", "mean_squared_error", "mean_absolute_error"]
 
@@ -755,7 +755,7 @@ if use_default_advanced_parameters:
     validation_split_in_percent = 20
     downscaling_in_xy = 1
     random_crop = True
-    binary_target = True
+    binary_target = False
     loss_function = 'weighted_binary_crossentropy'
     metrics = 'dice'
     optimizer = 'adam'
@@ -797,7 +797,7 @@ else:
 src_sample = tifffile.imread(training_source_sample)
 src_sample = model._min_max_scaling(src_sample)
 if binary_target:
-    tgt_sample = tifffile.imread(training_target_sample).astype(bool)
+    tgt_sample = tifffile.imread(training_target_sample)#.astype(bool)
 else:
     tgt_sample = tifffile.imread(training_target_sample)
 
@@ -940,6 +940,11 @@ if apply_data_augmentation:
 
 #@markdown ## Show model summary
 model.summary()
+print(train_generator.class_weights)
+print(train_generator.shape)
+#print(train_generator.source_dir_list)
+print(train_generator.source.dtype)
+print(train_generator.source.shape)
 
 #@markdown ##Start training
 
@@ -1044,7 +1049,7 @@ test_prediction = tifffile.imread(predict_path)
 prediction = tifffile.imread(predict_path)
 prediction = np.interp(prediction, (prediction.min(), prediction.max()), (0, 255))
 
-target = tifffile.imread(testing_target).astype(np.bool)
+target = tifffile.imread(testing_target)#.astype(bool)
 
 def iou_vs_threshold(prediction, target):
     threshold_list = []
@@ -1084,7 +1089,7 @@ if not os.path.exists(output_directory):
 output_path = os.path.join(output_directory, os.path.splitext(os.path.basename(source_path))[0] + '_predicted.tif')
 #@markdown ###Prediction parameters:
 
-binary_target = True #@param {type:"boolean"}
+binary_target = False #@param {type:"boolean"}
 
 save_probability_map = True #@param {type:"boolean"}
 
