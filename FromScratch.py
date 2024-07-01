@@ -6,44 +6,6 @@ Network = 'U-Net (3D)'
 
 from builtins import any as b_any
 
-def get_requirements_path():
-    # Store requirements file in 'contents' directory
-    current_dir = os.getcwd()
-    dir_count = current_dir.count('/') - 1
-    path = '../' * (dir_count) + 'requirements.txt'
-    return path
-
-def filter_files(file_list, filter_list):
-    filtered_list = []
-    for fname in file_list:
-        if b_any(fname.split('==')[0] in s for s in filter_list):
-            filtered_list.append(fname)
-    return filtered_list
-
-#def build_requirements_file(before, after):
-    #path = get_requirements_path()
-
-  
-    # Get minimum requirements file
-    df = pd.read_csv(path)
-    mod_list = [m.split('.')[0] for m in after if not m in before]
-    req_list_temp = df.values.tolist()
-    req_list = [x[0] for x in req_list_temp]
-
-    # Replace with package name and handle cases where import name is different to module name
-    mod_name_list = [['sklearn', 'scikit-learn'], ['skimage', 'scikit-image']]
-    mod_replace_list = [[x[1] for x in mod_name_list] if s in [x[0] for x in mod_name_list] else s for s in mod_list]
-    filtered_list = filter_files(req_list, mod_replace_list)
-
-    file=open(path,'w')
-    for item in filtered_list:
-        file.writelines(item)
-
-    file.close()
-
-import sys
-before = [str(m) for m in sys.modules]
-
 #Put the imported code and libraries here
 # !pip install fpdf
 
@@ -137,9 +99,7 @@ import matplotlib
 
 from skimage import io
 from shutil import rmtree
-from bioimageio.core.build_spec import build_model, add_weights
-from bioimageio.core.resource_tests import test_model
-from bioimageio.core.weight_converter.keras import convert_weights_to_tensorflow_saved_model_bundle
+
 
 print("Dependencies installed and imported.")
 
