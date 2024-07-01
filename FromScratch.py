@@ -883,24 +883,24 @@ def pdf_export(trained = False, augmentation = False, pretrained_model = False):
   pdf.set_font('')
   pdf.multi_cell(170, 5, txt = model_path+'/'+model_name, align = 'L')
   pdf.ln(1)
-  pdf.cell(60, 5, txt = 'Example Training pair (single slice)', ln=1)
-  pdf.ln(1)
-  exp_size = io.imread(base_path + '/TrainingDataExample_Unet3D.png').shape
-  pdf.image(base_path + '/TrainingDataExample_Unet3D.png', x = 11, y = None, w = round(exp_size[1]/8), h = round(exp_size[0]/8))
-  pdf.ln(1)
-  ref_1 = 'References:\n - ZeroCostDL4Mic: von Chamier, Lucas & Laine, Romain, et al. "Democratising deep learning for microscopy with ZeroCostDL4Mic." Nature Communications (2021).'
-  pdf.multi_cell(190, 5, txt = ref_1, align='L')
-  pdf.ln(1)
-  ref_2 = '- Unet 3D: Çiçek, Özgün, et al. "3D U-Net: learning dense volumetric segmentation from sparse annotation." International conference on medical image computing and computer-assisted intervention. Springer, Cham, 2016.'
-  pdf.multi_cell(190, 5, txt = ref_2, align='L')
+  #pdf.cell(60, 5, txt = 'Example Training pair (single slice)', ln=1)
+  #pdf.ln(1)
+  #exp_size = io.imread(base_path + '/TrainingDataExample_Unet3D.png').shape
+  #pdf.image(base_path + '/TrainingDataExample_Unet3D.png', x = 11, y = None, w = round(exp_size[1]/8), h = round(exp_size[0]/8))
+  #pdf.ln(1)
+  ##ref_1 = 'References:\n - ZeroCostDL4Mic: von Chamier, Lucas & Laine, Romain, et al. "Democratising deep learning for microscopy with ZeroCostDL4Mic." Nature Communications (2021).'
+  #pdf.multi_cell(190, 5, txt = ref_1, align='L')
+  #pdf.ln(1)
+  #ref_2 = '- Unet 3D: Çiçek, Özgün, et al. "3D U-Net: learning dense volumetric segmentation from sparse annotation." International conference on medical image computing and computer-assisted intervention. Springer, Cham, 2016.'
+  #pdf.multi_cell(190, 5, txt = ref_2, align='L')
   # if Use_Data_augmentation:
   #   ref_4 = '- Augmentor: Bloice, Marcus D., Christof Stocker, and Andreas Holzinger. "Augmentor: an image augmentation library for machine learning." arXiv preprint arXiv:1708.04680 (2017).'
   #   pdf.multi_cell(190, 5, txt = ref_4, align='L')
-  pdf.ln(3)
-  reminder = 'Important:\nRemember to perform the quality control step on all newly trained models\nPlease consider depositing your training dataset on Zenodo'
-  pdf.set_font('Arial', size = 11, style='B')
-  pdf.multi_cell(190, 5, txt=reminder, align='C')
-  pdf.ln(1)
+  #pdf.ln(3)
+  #reminder = 'Important:\nRemember to perform the quality control step on all newly trained models\nPlease consider depositing your training dataset on Zenodo'
+  #pdf.set_font('Arial', size = 11, style='B')
+  #pdf.multi_cell(190, 5, txt=reminder, align='C')
+  #pdf.ln(1)
 
   pdf.output(model_path+'/'+model_name+'/'+model_name+'_training_report.pdf')
 
