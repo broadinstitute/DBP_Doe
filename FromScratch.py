@@ -358,8 +358,8 @@ class MultiPageTiffGenerator(Sequence):
                                                                 sigma=self.deform_sigma,
                                                                 points=self.deform_points,
                                                                 order=self.deform_order)
-        if self.binary_target:
-            tgt_dfrm = tgt_dfrm > 0.1
+       # if self.binary_target:
+           # tgt_dfrm = tgt_dfrm > 0.1
 
         return self._min_max_scaling(src_dfrm), tgt_dfrm
 
@@ -1192,6 +1192,9 @@ else:
     training_source_sample = training_source
     training_target_sample = training_target
 
+print(training_source)
+print(training_source_sample)
+
 src_sample = tifffile.imread(training_source_sample)
 src_sample = model._min_max_scaling(src_sample)
 if binary_target:
@@ -1328,7 +1331,7 @@ if add_custom_augmenters:
         augmentations.append(aug_func)
 
 #@markdown ###Elastic deformations
-add_elastic_deform = False #@param {type:"boolean"}
+add_elastic_deform = True  #@param {type:"boolean"}
 sigma =  2#@param {type:"number"}
 points =  2#@param {type:"number"}
 order =  1#@param {type:"number"}
@@ -1418,7 +1421,7 @@ model.train(epochs=number_of_epochs,
             ckpt_period=checkpointing_period,
             save_best_ckpt_only=save_best_only,
             ckpt_path=last_ckpt_path, neptune_run=neptune_run)
-
+#print(_weighted_binary_crossentropy)
 print('Training successfully completed!')
 dt = time.time() - start
 mins, sec = divmod(dt, 60)
