@@ -1082,8 +1082,8 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 
 #@markdown <font size = 3>If not, please change:
 
-batch_size =  10#@param {type:"number"}
-patch_size = (64,64,8) #@param {type:"number"} # in pixels
+batch_size =  1 #@param {type:"number"}
+patch_size = (128,128,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
@@ -1285,7 +1285,7 @@ augmentations = []
 
 #@markdown ###Gaussian blur
 add_gaussian_blur = True #@param {type:"boolean"}
-gaussian_sigma =   0.7#@param {type:"number"}
+gaussian_sigma =   0.7 #@param {type:"number"}
 gaussian_frequency = 0.5 #@param {type:"number"}
 
 if add_gaussian_blur:
