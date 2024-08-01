@@ -569,10 +569,11 @@ class Unet3D:
         sample_img = SampleImageCallback(self.model,
                                          sample_batch,
                                          model_path)
-
+        validation_steps = math.floor(len(val_generator)/batch_size)
+        print(f'validation_steps:{validation_steps}')
         history_callback = self.model.fit(train_generator,
                        validation_data=val_generator,
-                       validation_steps=math.floor(len(val_generator)/batch_size),
+                       #validation_steps=math.floor(len(val_generator)/batch_size),
                        epochs=epochs,
                        callbacks=[csv_logger,
                                   model_ckpt,
@@ -580,7 +581,13 @@ class Unet3D:
 
         last_ckpt_name = ckpt_dir + '/' + model_name + '_last.hdf5'
         self.model.save_weights(last_ckpt_name)
-
+        history = history_callback.history
+        print(history)
+        print(history.keys())
+        #csv_file_path = 'log_dir/training_evaluation.csv'
+        #df = pd.read_csv(csv_file_path)
+        #print(df)
+        #print(df.columns)
         loss_history = []
         val_loss_history = []
         epoch_history = []
@@ -597,6 +604,13 @@ class Unet3D:
                 epoch_history.append(int(row['epoch']))
                 dice_coefficient_history.append(float(row['dice_coefficient']))
                 val_dice_coefficient_history.append(float(row['val_dice_coefficient']))
+                print(row)
+
+        print(loss_history)
+        print(val_loss_history)
+        print(f'This is validation step:{validation_steps}')
+       # df = pd.read_csv('csv_out_name')
+       # print(df.columns)
 
 
         # Log loss values to Neptune
@@ -1082,7 +1096,7 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 
 #@markdown <font size = 3>If not, please change:
 
-batch_size =  1 #@param {type:"number"}
+batch_size = 1 #@param {type:"number"}
 patch_size = (128,128,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
@@ -1121,7 +1135,7 @@ if use_default_advanced_parameters:
 #checkpointing_period = 1 #@param {type:"number"}
 checkpointing_period = "epoch"
 #@markdown  <font size = 3>If chosen, only the best checkpoint is saved. Otherwise a checkpoint is saved every epoch:
-save_best_only = False #@param {type:"boolean"}
+save_best_only = True #@param {type:"boolean"}
 
 #@markdown ###Resume training
 #@markdown <font size = 3>Choose if training was interrupted:
