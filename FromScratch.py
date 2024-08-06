@@ -569,12 +569,13 @@ class Unet3D:
         sample_img = SampleImageCallback(self.model,
                                          sample_batch,
                                          model_path)
-        validation_steps = math.floor(len(val_generator)/batch_size)
-        print(f'validation_steps:{validation_steps}')
-        print(f'length of validation gen = {len(val_generator)}')
+       #validation_steps = math.floor(len(val_generator)/batch_size)
+       #print(f'validation_steps:{validation_steps}')
+       #print(f'length of validation gen = {len(val_generator)}')
         history_callback = self.model.fit(train_generator,
                        validation_data=val_generator,
                        #validation_steps=math.floor(len(val_generator)/batch_size),
+                       validation_steps=max(1,math.floor(len(val_generator)/batch_size)),
                        epochs=epochs,
                        callbacks=[csv_logger,
                                   model_ckpt,
