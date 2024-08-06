@@ -571,6 +571,7 @@ class Unet3D:
                                          model_path)
         validation_steps = math.floor(len(val_generator)/batch_size)
         print(f'validation_steps:{validation_steps}')
+        print(f'length of validation gen = {len(val_generator)}')
         history_callback = self.model.fit(train_generator,
                        validation_data=val_generator,
                        #validation_steps=math.floor(len(val_generator)/batch_size),
@@ -1096,7 +1097,7 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 
 #@markdown <font size = 3>If not, please change:
 
-batch_size = 1 #@param {type:"number"}
+batch_size = 10 #@param {type:"number"}
 patch_size = (128,128,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
