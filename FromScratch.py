@@ -1280,7 +1280,12 @@ params =  {'training_source': training_source,
            'downscaling': downscaling_in_xy,
            'true_patch_size': true_patch_size,
            'val_split': validation_split_in_percent/100,
-           'random_crop': random_crop}
+           'random_crop': random_crop,
+           'learning_rate':learning_rate,
+           'patch_size':patch_size,
+           'loss_function':loss_function,
+           'optimizer':optimizer,
+           'metrics':metrics}
 
 neptune_run['parameters'] = params
 
