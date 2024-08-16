@@ -583,9 +583,9 @@ class Unet3D:
 
         last_ckpt_name = ckpt_dir + '/' + model_name + '_last.hdf5'
         self.model.save_weights(last_ckpt_name)
-        history = history_callback.history
-        print(history)
-        print(history.keys())
+        #history = history_callback.history
+        #print(history)
+        #print(history.keys())
         #csv_file_path = 'log_dir/training_evaluation.csv'
         #df = pd.read_csv(csv_file_path)
         #print(df)
@@ -608,9 +608,9 @@ class Unet3D:
                 val_dice_coefficient_history.append(float(row['val_dice_coefficient']))
                 print(row)
 
-        print(loss_history)
-        print(val_loss_history)
-        print(f'This is validation step:{validation_steps}')
+        #print(loss_history)
+        #print(val_loss_history)
+        #print(f'This is validation step:{validation_steps}')
        # df = pd.read_csv('csv_out_name')
        # print(df.columns)
 
@@ -1098,8 +1098,8 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 
 #@markdown <font size = 3>If not, please change:
 
-batch_size = 10 #@param {type:"number"}
-patch_size = (128,128,8) #@param {type:"number"} # in pixels
+batch_size = 24 #@param {type:"number"}
+patch_size = (64,64,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
@@ -1112,7 +1112,7 @@ loss_function = 'weighted_binary_crossentropy' #@param ["weighted_binary_crossen
 
 metrics = 'dice' #@param ["dice", "accuracy"]
 
-optimizer = 'adam' #@param ["adam", "sgd", "rmsprop"]
+optimizer = 'sgd' #@param ["adam", "sgd", "rmsprop"]
 
 learning_rate = 0.001 #@param{type:"number"}
 
