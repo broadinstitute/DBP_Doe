@@ -1,0 +1,41 @@
+# HTC Submit File
+
+# Provide HTCondor with the name of the Docker container
+docker_image = suganyasivaguru/localtest:v1
+universe = docker
+
+#scripts to execute 
+executable = executable.sh
+
+log = job_$(ClusterID).log
+error = job_$(ClusterID).err
+output = job_$(ClusterID).out
+
+#files to transfer 
+transfer_input_files = /home/sivagurunath/project/DBP_Doe/data/sourcedata,\
+		       /home/sivagurunath/project/DBP_Doe/data/targetdata,\
+		       /home/sivagurunath/project/DBP_Doe/data/testsource/18_C1_all.tif,\
+		       /home/sivagurunath/project/DBP_Doe/data/testtarget/18_C1_all_masks.tif,\
+                       /home/sivagurunath/project/DBP_Doe/data/predictdata/070721_Slide2_Animal1_all.tif,\
+		       /home/sivagurunath/project/DBP_Doe/FromScratch.py
+                       
+                       
+
+#preserve_relative_paths = True 
+
+# Transferring files out on exit
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+# Requirments to get access to COBA server
+accounting_group = COBA_BroadCimini
+requirements = (Machine == "coba2000.chtc.wisc.edu") && (OpSysMajorVer == 7 || OpSysMajorVer == 8)
+			
+#resource
+request_cpus = 1
+request_memory = 15GB
+request_disk = 20GB
+request_gpus = 1
+
+
+queue 
