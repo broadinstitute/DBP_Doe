@@ -7,9 +7,15 @@ universe = docker
 #scripts to execute 
 executable = executable.sh
 
-log = job_$(ClusterID).log
-error = job_$(ClusterID).err
-output = job_$(ClusterID).out
+#creating arguments that can be used from the csv file 
+arguments = $(epoch) $(model_name) $(batch_size) $(optimizer)
+
+#to have one directory for all the output files from one job 
+#intialdir = job_$(ClusterID)
+
+log = job_$(ClusterID)_$(ProcID).log
+error = job_$(ClusterID)_$(ProcID).err
+output = job_$(ClusterID)_$(ProcID).out
 
 #files to transfer 
 transfer_input_files = /home/sivagurunath/project/DBP_Doe/data/sourcedata,\
@@ -37,5 +43,4 @@ request_memory = 15GB
 request_disk = 20GB
 request_gpus = 1
 
-
-queue 
+queue epoch,model_name,batch_size,optimizer from variables.txt
