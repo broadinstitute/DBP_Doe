@@ -1054,8 +1054,6 @@ else:
 
 parser = argparse.ArgumentParser(description = "train")
 
-args = parser.parse_args()
-
 parser.add_argument("--number_of_epochs",nargs="?", default=10,  type=int, required=False)
 
 parser.add_argument("--model_name",nargs="?", default='model1', type=str, required=False)
@@ -1082,6 +1080,7 @@ parser.add_argument("--loss_function", type=str, default='weighted_binary_crosse
 
 parser.add_argument("--optimizer", type=str, default='adam', required=False)
 
+args = parser.parse_args()
 
 #@markdown ###Path to training data:
 training_source = args.training_source #@param {type:"string"}
