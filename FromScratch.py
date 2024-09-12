@@ -1051,7 +1051,10 @@ else:
 
 #using the argparse for options to add flags 
 
+
 parser = argparse.ArgumentParser(description = "train")
+
+args = parser.parse_args()
 
 parser.add_argument("--number_of_epochs",nargs="?", default=10,  type=int, required=False)
 
@@ -1073,7 +1076,11 @@ parser.add_argument("--source_path", type=str, required=False)
 
 parser.add_argument("--output_directory", type=str, required=False)
 
-args = parser.parse_args()
+parser.add_argument("--batch_size", type=int, default=24, required=False)
+
+parser.add_argument("--loss_function", type=str, default='weighted_binary_crossentropy', required=False)
+
+parser.add_argument("--optimizer", type=str, default='adam', required=False)
 
 
 #@markdown ###Path to training data:
@@ -1098,7 +1105,7 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 
 #@markdown <font size = 3>If not, please change:
 
-batch_size = 24 #@param {type:"number"}
+batch_size = args.batch_size #@param {type:"number"}
 patch_size = (64,64,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
@@ -1108,13 +1115,13 @@ downscaling_in_xy =  1#@param {type:"number"} # in pixels
 
 binary_target = True #@param {type:"boolean"}
 
-loss_function = 'weighted_binary_crossentropy' #@param ["weighted_binary_crossentropy", "binary_crossentropy", "categorical_crossentropy", "sparse_categorical_crossentropy", "mean_squared_error", "mean_absolute_error"]
+loss_function = args.loss_function #@param ["weighted_binary_crossentropy", "binary_crossentropy", "categorical_crossentropy", "sparse_categorical_crossentropy", "mean_squared_error", "mean_absolute_error"]
 
 metrics = 'dice' #@param ["dice", "accuracy"]
 
-optimizer = 'sgd' #@param ["adam", "sgd", "rmsprop"]
+optimizer = args.optimizer #@param ["adam", "sgd", "rmsprop"]
 
-learning_rate = 0.001 #@param{type:"number"}
+learning_rate = args.learning_rate #@param{type:"number"}
 
 if image_pre_processing == "randomly crop to patch_size":
     random_crop = True
