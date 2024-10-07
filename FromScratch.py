@@ -25,6 +25,7 @@ import shutil
 import argparse
 import neptune
 
+from neptune.types import File
 
 import pandas as pd
 from glob import glob
@@ -1638,3 +1639,17 @@ print('Predictions saved as', output_path)
 
 src_volume = tifffile.imread(source_path)
 pred_volume = tifffile.imread(output_path)
+
+
+#Making intensity projection of the predicted image to log it in neptune 
+
+source_max_proj = np.max(src_volume, axis=0)
+pred_max_proj = np.max(pred_volume, axis=0)
+
+source_max = tifffile.imread(source_max_proj)
+pred_max = tifffile.imread(pred_max_proj)
+
+neptune_run['source_max'].upload(source_max)
+neptune_run['pred_max'].upload(pred_max)
+
+
