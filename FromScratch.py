@@ -1646,10 +1646,18 @@ pred_volume = tifffile.imread(output_path)
 source_max_proj = np.max(src_volume, axis=0)
 pred_max_proj = np.max(pred_volume, axis=0)
 
-source_max = tifffile.imread(source_max_proj)
-pred_max = tifffile.imread(pred_max_proj)
 
-neptune_run['source_max'].upload(source_max)
-neptune_run['pred_max'].upload(pred_max)
+#Writing the maximum intensity projected files to a folder
+source_max_path = os.path.join(output_directory, os.path.splitext(os.path.basename(source_path))[0] + '_source_max.tif')
+pred_max_path = os.path.join(output_directory, os.path.splitext(os.path.basename(source_path))[0] + '_predicted_max.tif')
+
+tifffile.imwrite(source_max_path, source_max_proj.astype('float32'), imagej=True)
+tifffile.imwrite(pred_max_path, pred_max_proj.astype('float32'), imagej=True)
+
+source_max = tifffile.imread(source_max_path)
+pred_max = tifffile.imread(pred_max_path)
+
+neptune_run['source_max'].upload(File.as_image(source_max))
+neptune_run['pred_max'].upload(File.as_image(pred_max))
 
 
