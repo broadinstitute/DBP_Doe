@@ -1651,7 +1651,7 @@ pred_max_proj = np.max(pred_volume, axis=0)
 source_max_path = os.path.join(output_directory, os.path.splitext(os.path.basename(source_path))[0] + '_source_max.tif')
 pred_max_path = os.path.join(output_directory, os.path.splitext(os.path.basename(source_path))[0] + '_predicted_max.tif')
 
-tifffile.imwrite(source_max_path, source_max_proj.astype('float32'), imagej=True)
+tifffile.imwrite(source_max_path, source_max_proj.astype('uint8'), imagej=True)
 tifffile.imwrite(pred_max_path, pred_max_proj.astype('float32'), imagej=True)
 
 source_max = tifffile.imread(source_max_path)

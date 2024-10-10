@@ -1,2 +1,5 @@
-200, model1, 24 
-500, model2, 32
+200, model1, 24, adam, 0.001
+200, model2, 32, sgd, 0.001
+500, model3, 8, adam, 0.001
+500, model4, 24, adam, 0.0001
+500, model5, 32, adam, 0.0001

@@ -8,7 +8,7 @@ universe = docker
 executable = executable.sh
 
 #creating arguments that can be used from the csv file 
-arguments = $(epoch) $(model_name) $(batch_size) $(optimizer)
+arguments = $(epoch) $(model_name) $(batch_size) $(optimizer) $(learning_rate)
 
 #to have one directory for all the output files from one job 
 #intialdir = job_$(ClusterID)
@@ -39,8 +39,8 @@ requirements = (Machine == "coba2000.chtc.wisc.edu") && (OpSysMajorVer == 7 || O
 			
 #resource
 request_cpus = 1
-request_memory = 15GB
+request_memory = 20GB
 request_disk = 20GB
 request_gpus = 1
 
-queue epoch,model_name,batch_size,optimizer from variables.txt
+queue epoch,model_name,batch_size,optimizer,learning_rate from variables.txt
