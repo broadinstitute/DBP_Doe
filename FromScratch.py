@@ -26,6 +26,7 @@ import argparse
 import neptune
 
 from neptune.types import File
+from neptune.integrations.tensorflow_keras import NeptuneCallback
 
 import pandas as pd
 from glob import glob
@@ -112,6 +113,8 @@ neptune_run = neptune.init_run(
     project="BroadImagingPlatform/DBP-Doe",
     api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIyMWU0MmFiZS0yZGVkLTQwMGItYTczNC0yNzdiNTljMTExY2QifQ==",
 )
+
+neptune_callback = NeptuneCallback(run=run)
 
 #Create a variable to get and store relative base path
 base_path = os.getcwd()
@@ -578,9 +581,10 @@ class Unet3D:
                        #validation_steps=math.floor(len(val_generator)/batch_size),
                        validation_steps=max(1,math.floor(len(val_generator)/batch_size)),
                        epochs=epochs,
-                       callbacks=[csv_logger,
-                                  model_ckpt,
-                                  sample_img])
+                       callbacks=[neptune_callback])
+                       #callbacks=[csv_logger,
+                                 #model_ckpt,
+                                  #sample_img])
 
         last_ckpt_name = ckpt_dir + '/' + model_name + '_last.hdf5'
         self.model.save_weights(last_ckpt_name)

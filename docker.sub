@@ -1,7 +1,7 @@
 # HTC Submit File
 
 # Provide HTCondor with the name of the Docker container
-docker_image = suganyasivaguru/localtest:v1
+docker_image = suganyasivaguru/dbpdoe:v1
 universe = docker
 
 #scripts to execute 
@@ -43,4 +43,4 @@ request_memory = 20GB
 request_disk = 20GB
 request_gpus = 1
 
-queue epoch,model_name,batch_size,optimizer,learning_rate from variables.txt
+queue epoch,model_name,batch_size,optimizer,learning_rate from variables_1.txt
