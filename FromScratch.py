@@ -114,7 +114,7 @@ neptune_run = neptune.init_run(
     api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIyMWU0MmFiZS0yZGVkLTQwMGItYTczNC0yNzdiNTljMTExY2QifQ==",
 )
 
-neptune_callback = NeptuneCallback(run=run)
+neptune_callback = NeptuneCallback(run=neptune_run)
 
 #Create a variable to get and store relative base path
 base_path = os.getcwd()
