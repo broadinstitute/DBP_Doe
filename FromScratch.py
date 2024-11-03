@@ -581,7 +581,7 @@ class Unet3D:
                        #validation_steps=math.floor(len(val_generator)/batch_size),
                        validation_steps=max(1,math.floor(len(val_generator)/batch_size)),
                        epochs=epochs,
-                       callbacks=[neptune_callback])
+                       callbacks=[neptune_callback, csv_logger])
                        #callbacks=[csv_logger,
                                  #model_ckpt,
                                   #sample_img])
