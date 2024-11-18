@@ -1114,7 +1114,7 @@ patch_size = (64,64,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
-validation_split_in_percent = 30 #@param{type:"number"}
+validation_split_in_percent = 50 #@param{type:"number"}
 downscaling_in_xy =  1#@param {type:"number"} # in pixels
 
 binary_target = True #@param {type:"boolean"}
@@ -1136,7 +1136,7 @@ if use_default_advanced_parameters:
     print("Default advanced parameters enabled")
     batch_size = 3
     training_shape = (256,256,8,1)
-    validation_split_in_percent = 20
+    validation_split_in_percent = 50
     downscaling_in_xy = 1
     random_crop = True
     binary_target = True
