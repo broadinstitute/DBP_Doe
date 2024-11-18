@@ -1,0 +1,2 @@
+100, model_opt1, 24, adam, 0.0001
+150, model_opt2, 24, adam, 0.0001
