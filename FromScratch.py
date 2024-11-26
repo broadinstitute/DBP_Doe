@@ -418,22 +418,6 @@ class SampleImageCallback(Callback):
         self.model_path = model_path
         self.save = save
 
-    #def on_epoch_end(self, epoch, logs={}):
-        #sample_predict = self.model.predict_on_batch(self.sample_data)
-
-        #f=plt.figure(figsize=(16,8))
-        #plt.subplot(1,2,1)
-        #plt.imshow(self.sample_data[0,:,:,0,0], interpolation='nearest', cmap='gray')
-        #plt.title('Sample source')
-        #plt.axis('off');
-
-        #plt.subplot(1,2,2)
-        #plt.imshow(sample_predict[0,:,:,0,0], interpolation='nearest', cmap='magma')
-        #plt.title('Predicted target')
-        #plt.axis('off');
-
-        #plt.show()
-
         if self.save:
             plt.savefig(self.model_path + '/epoch_' + str(epoch+1) + '.png')
 
@@ -588,13 +572,7 @@ class Unet3D:
 
         last_ckpt_name = ckpt_dir + '/' + model_name + '_last.hdf5'
         self.model.save_weights(last_ckpt_name)
-        #history = history_callback.history
-        #print(history)
-        #print(history.keys())
-        #csv_file_path = 'log_dir/training_evaluation.csv'
-        #df = pd.read_csv(csv_file_path)
-        #print(df)
-        #print(df.columns)
+       
         loss_history = []
         val_loss_history = []
         epoch_history = []
@@ -613,11 +591,6 @@ class Unet3D:
                 val_dice_coefficient_history.append(float(row['val_dice_coefficient']))
                 print(row)
 
-        #print(loss_history)
-        #print(val_loss_history)
-        #print(f'This is validation step:{validation_steps}')
-       # df = pd.read_csv('csv_out_name')
-       # print(df.columns)
 
 
         # Log loss values to Neptune
@@ -748,7 +721,7 @@ def pdf_export(trained = False, augmentation = False, pretrained_model = False):
   all_packages = ''
   for requirement in freeze(local_only=True):
     all_packages = all_packages+requirement+', '
-  #print(all_packages)
+  
 
   #Main Packages
   main_packages = ''
@@ -771,8 +744,7 @@ def pdf_export(trained = False, augmentation = False, pretrained_model = False):
     gpu_name = gpu_name[gpu_name.find('Tesla'):gpu_name.find('Tesla')+10]
   except:
     gpu_name = ' - No GPU found - '
-  #print(cuda_version[cuda_version.find(', V')+3:-1])
-  #print(gpu_name)
+
 
   if os.path.isdir(training_source):
     shape = io.imread(training_source+'/'+os.listdir(training_source)[0]).shape
@@ -904,24 +876,7 @@ def pdf_export(trained = False, augmentation = False, pretrained_model = False):
   pdf.set_font('')
   pdf.multi_cell(170, 5, txt = model_path+'/'+model_name, align = 'L')
   pdf.ln(1)
-  #pdf.cell(60, 5, txt = 'Example Training pair (single slice)', ln=1)
-  #pdf.ln(1)
-  #exp_size = io.imread(base_path + '/TrainingDataExample_Unet3D.png').shape
-  #pdf.image(base_path + '/TrainingDataExample_Unet3D.png', x = 11, y = None, w = round(exp_size[1]/8), h = round(exp_size[0]/8))
-  #pdf.ln(1)
-  ##ref_1 = 'References:\n - ZeroCostDL4Mic: von Chamier, Lucas & Laine, Romain, et al. "Democratising deep learning for microscopy with ZeroCostDL4Mic." Nature Communications (2021).'
-  #pdf.multi_cell(190, 5, txt = ref_1, align='L')
-  #pdf.ln(1)
-  #ref_2 = '- Unet 3D: Çiçek, Özgün, et al. "3D U-Net: learning dense volumetric segmentation from sparse annotation." International conference on medical image computing and computer-assisted intervention. Springer, Cham, 2016.'
-  #pdf.multi_cell(190, 5, txt = ref_2, align='L')
-  # if Use_Data_augmentation:
-  #   ref_4 = '- Augmentor: Bloice, Marcus D., Christof Stocker, and Andreas Holzinger. "Augmentor: an image augmentation library for machine learning." arXiv preprint arXiv:1708.04680 (2017).'
-  #   pdf.multi_cell(190, 5, txt = ref_4, align='L')
-  #pdf.ln(3)
-  #reminder = 'Important:\nRemember to perform the quality control step on all newly trained models\nPlease consider depositing your training dataset on Zenodo'
-  #pdf.set_font('Arial', size = 11, style='B')
-  #pdf.multi_cell(190, 5, txt=reminder, align='C')
-  #pdf.ln(1)
+  
 
   pdf.output(model_path+'/'+model_name+'/'+model_name+'_training_report.pdf')
 
@@ -1021,15 +976,6 @@ class bcolors:
   NORMAL = '\033[0m'  # white (normal)
 
 
-# Check if this is the latest version of the notebook
-# Latest_notebook_version = pd.read_csv("https://raw.githubusercontent.com/HenriquesLab/ZeroCostDL4Mic/master/Colab_notebooks/Latest_ZeroCostDL4Mic_Release.csv")
-
-# if Notebook_version == list(Latest_notebook_version.columns):
-#   print("This notebook is up-to-date.")
-
-# if not Notebook_version == list(Latest_notebook_version.columns):
-#   print(bcolors.WARNING +"A new version of this notebook has been released. We recommend that you download it at https://github.com/HenriquesLab/ZeroCostDL4Mic/wiki")
-
 All_notebook_versions = pd.read_csv("https://raw.githubusercontent.com/HenriquesLab/ZeroCostDL4Mic/master/Colab_notebooks/Latest_Notebook_versions.csv", dtype=str)
 print('Notebook version: '+Notebook_version)
 Latest_Notebook_version = All_notebook_versions[All_notebook_versions["Notebook"] == Network]['Version'].iloc[0]
@@ -1039,10 +985,6 @@ if Notebook_version == Latest_Notebook_version:
 else:
   print(bcolors.WARNING +"A new version of this notebook has been released. We recommend that you download it at https://github.com/HenriquesLab/ZeroCostDL4Mic/wiki")
 
-
-# Build requirements file for local run
-#after = [str(m) for m in sys.modules]
-#build_requirements_file(before, after)
 
 if tf.test.gpu_device_name()=='':
   print('You do not have GPU access.')
@@ -1151,15 +1093,9 @@ checkpointing_period = "epoch"
 save_best_only = True #@param {type:"boolean"}
 
 #@markdown ###Resume training
-#@markdown <font size = 3>Choose if training was interrupted:
 resume_training = False #@param {type:"boolean"}
 
-#@markdown ###Transfer learning
-#@markdown <font size = 3>For transfer learning, do not select resume_training and specify a checkpoint_path below.
 
-#@markdown <font size = 3> - If the model is already downloaded or is locally available, please specify the path to the .h5 file.
-
-#@markdown <font size = 3> - To use a model from the BioImage Model Zoo, write the model ID. For example: 10.5281/zenodo.5749843
 
 pretrained_model_choice = "Model_from_file" #@param ["Model_from_file", "bioimageio_model"]
 checkpoint_path = "" #@param {type:"string"}
@@ -1208,8 +1144,6 @@ if not resume_training and os.path.exists(full_model_path):
     # print('!! WARNING: Folder already exists and will be overwritten !!')
     # shutil.rmtree(full_model_path)
 
-# if not os.path.exists(full_model_path):
-#     os.makedirs(full_model_path)
 
 # Show sample image
 if os.path.isdir(training_source):
@@ -1259,27 +1193,7 @@ def scroll_in_z(z):
         src_slice = transform.resize(src_down, (training_shape[0], training_shape[1]), mode='constant', preserve_range=True)
         tgt_slice = transform.resize(tgt_down, (training_shape[0], training_shape[1]), mode='constant', preserve_range=True)
 
-    #f=plt.figure(figsize=(16,8))
-    #plt.subplot(1,2,1)
-    #plt.imshow(src_slice, cmap='gray')
-    #plt.title('Training source (z = ' + str(z) + ')', fontsize=15)
-    #plt.axis('off')
-
-    #plt.subplot(1,2,2)
-    #plt.imshow(tgt_slice, cmap='magma')
-    #plt.title('Training target (z = ' + str(z) + ')', fontsize=15)
-    #plt.axis('off')
-    #plt.savefig(base_path + '/TrainingDataExample_Unet3D.png',bbox_inches='tight',pad_inches=0)
-    #plt.close()
-
-#print('This is what the training images will look like with the chosen settings')
-#interact(scroll_in_z, z=widgets.IntSlider(min=1, max=src_sample.shape[0], step=1, value=0));
-#plt.show()
-#Create a copy of an example slice and close the display.
-#scroll_in_z(z=int(src_sample.shape[0]/2))
-# If you close the display, then the users can't interactively inspect the data
-# plt.close()
-
+    
 # Save model parameters
 params =  {'training_source': training_source,
            'training_target': training_target,
@@ -1301,10 +1215,6 @@ params =  {'training_source': training_source,
 neptune_run['parameters'] = params
 
 params_df = pd.DataFrame.from_dict(params, orient='index')
-
-# apply_data_augmentation = False
-# pdf_export(augmentation = apply_data_augmentation, pretrained_model = resume_training)
-
 
 #@markdown ##**Augmentation options**
 
@@ -1401,21 +1311,7 @@ if apply_data_augmentation:
   print('Data augmentation enabled.')
   sample_src_aug, sample_tgt_aug = train_generator.sample_augmentation(random.randint(0, len(train_generator)))
 
-  #def scroll_in_z(z):
-      #f=plt.figure(figsize=(16,8))
-      #plt.subplot(1,2,1)
-      #plt.imshow(sample_src_aug[0,:,:,z-1,0], cmap='gray')
-      #plt.title('Sample augmented source (z = ' + str(z) + ')', fontsize=15)
-      #plt.axis('off')
-
-      #plt.subplot(1,2,2)
-      #plt.imshow(sample_tgt_aug[0,:,:,z-1,0], cmap='magma')
-      #plt.title('Sample training target (z = ' + str(z) + ')', fontsize=15)
-      #plt.axis('off')
-
-  #print('This is what the augmented training images will look like with the chosen settings')
-  #interact(scroll_in_z, z=widgets.IntSlider(min=1, max=sample_src_aug.shape[3], step=1, value=0));
-
+  
 else:
   print('Data augmentation disabled.')
 
@@ -1460,10 +1356,6 @@ mins, sec = divmod(dt, 60)
 hour, mins = divmod(mins, 60)
 print("Time elapsed:",hour, "hour(s)",mins,"min(s)",round(sec),"sec(s)")
 
-#Create a pdf document with training summary
-
-#pdf_export(trained = True, augmentation = apply_data_augmentation, pretrained_model = resume_training)
-
 
 #@markdown ##Compare prediction and ground-truth on testing data
 
@@ -1505,8 +1397,6 @@ prediction = model.predict(testing_source, last_ckpt_path,
 tifffile.imwrite(predict_path, prediction.astype('float32'), imagej=True)
 
 print('Predicted images!')
-
-#qc_metrics_path = full_model_path + '/Quality Control/QC_metrics_' + qc_model_name + '.csv'
 
 test_target = tifffile.imread(testing_target)
 test_source = tifffile.imread(testing_source)
