@@ -1112,7 +1112,7 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 batch_size = args.batch_size #@param {type:"number"}
 patch_size = (64,64,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
-image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
+image_pre_processing = 'randomly crop to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
 validation_split_in_percent = 50 #@param{type:"number"}
 downscaling_in_xy =  1#@param {type:"number"} # in pixels
