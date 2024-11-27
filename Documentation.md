@@ -58,5 +58,25 @@ Following steps were followed before adding them to the training set,
 
 ***Generators*** are generally used to yield batches of data on the fly to save memory, especially for large datasets. 
 
+* `tf.keras.utils.Sequence` is used to run batches in parallel 
+
+* batch_size - no of samples to include in each batch.  No of images that are loaded per iteration. 
+
+* shape - shape of the input data 
+
+* 
+
+
+Based on the discussion with Beth following are the places that I need to look for, 
+
+* Random crop - false
+
+I tried setting it to False by choosing the `image_pre_processing` to `randomly crop to patch_size` based on the following,
+
+![alt text](image-1.png)
+
+It seems this did not help since the dice coefficient of validation is still similar to the previous runs. 
+
+
 
 
