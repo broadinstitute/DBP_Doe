@@ -46,23 +46,6 @@ import numpy as np
 import tensorflow as tf
 print("TensorFlow version: {}".format(tf.__version__))
 
-# from keras import backend as K
-
-# from keras.layers import Conv3D
-# from keras.layers import BatchNormalization
-# from keras.layers import ReLU
-# from keras.layers import MaxPooling3D
-# from keras.layers import Conv3DTranspose
-# from keras.layers import Input
-# from keras.layers import Concatenate
-
-# from keras.models import Model
-
-# from keras.utils import Sequence
-# from keras.callbacks import ModelCheckpoint
-# from keras.callbacks import CSVLogger
-# from keras.callbacks import Callback
-
 from tensorflow.keras import backend as K
 
 from tensorflow.keras.layers import Conv3D
@@ -83,13 +66,6 @@ from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.metrics import RootMeanSquaredError
 
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop
-
-from ipywidgets import interact
-from ipywidgets import interactive
-from ipywidgets import fixed
-from ipywidgets import interact_manual
-import ipywidgets as widgets
-
 
 from datetime import datetime
 import subprocess

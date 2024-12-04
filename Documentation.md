@@ -64,7 +64,6 @@ Following steps were followed before adding them to the training set,
 
 * shape - shape of the input data 
 
-* 
 
 
 Based on the discussion with Beth following are the places that I need to look for, 
@@ -79,4 +78,14 @@ It seems this did not help since the dice coefficient of validation is still sim
 
 
 
+**Questions:**
+
+* Why augment factor is 4 or 1 based whether the boolean is True or False? What does augment factor mean?
+
+
+**Troubleshooting:**
+
+To run the docker locally I used the following, 
+
+Beth shared this - `docker run --rm -v local/path:/Docker/absolute/path --entrypoint /bin/sh -it your/Docker:tag`
 
