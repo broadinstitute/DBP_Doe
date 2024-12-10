@@ -89,3 +89,11 @@ To run the docker locally I used the following,
 
 Beth shared this - `docker run --rm -v local/path:/Docker/absolute/path --entrypoint /bin/sh -it your/Docker:tag`
 
+This is the one that I used ((Initially the same command was giving errors but ran after restarting the laptop :) ), 
+
+`docker run --rm -v /c/Users/ssivagur/Documents/GitHub/DBP_Doe:/app --entrypoint /bin/sh -it suganyasivaguru/dbpdoe:v1`
+
+Once running it locally, I edited the code to access the local files for source and target and also turned off the neptune logs since it is for debugging. The new fils is named as `ScriptForLocalRun.py`
+
+I added the source and target images in the mounted folder after mounting which meant I need to re-mount so docker was able to find it and I also just mentioned the folder name without giving the entire path since the docker is alerady in the mounted folder. These changes helped in making the script run locally and also was training with one image that I provided. 
+

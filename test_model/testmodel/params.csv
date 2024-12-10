@@ -3,7 +3,7 @@ training_source,source
 training_target,target
 model_name,testmodel
 model_path,test_model
-number_of_epochs,10
+number_of_epochs,2
 batch_size,24
 training_shape,"(64, 64, 8, 1)"
 downscaling,1
