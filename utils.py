@@ -360,8 +360,8 @@ class MultiPageTiffGenerator(Sequence):
                                                                 sigma=self.deform_sigma,
                                                                 points=self.deform_points,
                                                                 order=self.deform_order)
-       # if self.binary_target:
-           # tgt_dfrm = tgt_dfrm > 0.1
+        if self.binary_target:
+           tgt_dfrm = tgt_dfrm > 0.1
 
         return self._min_max_scaling(src_dfrm), tgt_dfrm
 

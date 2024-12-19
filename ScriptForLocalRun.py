@@ -82,13 +82,13 @@ print("Dependencies installed and imported.")
 
 # neptune setup
 
-EXPERIMENT_DESCRIPTION = 'Track the training details'
+#EXPERIMENT_DESCRIPTION = 'Track the training details'
 
-neptune_run = neptune.init_run(
-    project="BroadImagingPlatform/DBP-Doe",
-    api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIyMWU0MmFiZS0yZGVkLTQwMGItYTczNC0yNzdiNTljMTExY2QifQ==")
+#neptune_run = neptune.init_run(
+    #project="BroadImagingPlatform/DBP-Doe",
+    #api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIyMWU0MmFiZS0yZGVkLTQwMGItYTczNC0yNzdiNTljMTExY2QifQ==")
 
-neptune_callback = NeptuneCallback(run=neptune_run)
+#neptune_callback = NeptuneCallback(run=neptune_run)
 
 # -------------- Other definitions -----------
 W  = '\033[0m'  # white (normal)
@@ -151,7 +151,7 @@ parser.add_argument("--source_path", type=str, required=False)
 
 parser.add_argument("--output_directory", type=str, required=False)
 
-parser.add_argument("--batch_size", type=int, default=24, required=False)
+parser.add_argument("--batch_size", type=int, default=1, required=False)
 
 parser.add_argument("--loss_function", type=str, default='weighted_binary_crossentropy', required=False)
 
@@ -160,8 +160,8 @@ parser.add_argument("--optimizer", type=str, default='adam', required=False)
 args = parser.parse_args()
 
 #@markdown ###Path to training data:
-training_source = 'source' #@param {type:"string"}
-training_target = 'target'#@param {type:"string"}
+training_source = '/app/source' #@param {type:"string"}
+training_target = '/app/target'#@param {type:"string"}
 
 #@markdown ---
 
@@ -184,9 +184,9 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 batch_size = args.batch_size #@param {type:"number"}
 patch_size = (64,64,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
-image_pre_processing = 'resize to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
+image_pre_processing = 'randomly crop to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
-validation_split_in_percent = 50 #@param{type:"number"}
+validation_split_in_percent = 20 #@param{type:"number"}
 downscaling_in_xy =  1#@param {type:"number"} # in pixels
 
 binary_target = True #@param {type:"boolean"}
@@ -204,23 +204,23 @@ if image_pre_processing == "randomly crop to patch_size":
 else:
     random_crop = False
 
-if use_default_advanced_parameters:
-    print("Default advanced parameters enabled")
-    batch_size = 3
-    training_shape = (256,256,8,1)
-    validation_split_in_percent = 50
-    downscaling_in_xy = 1
-    random_crop = True
-    binary_target = True
-    loss_function = 'weighted_binary_crossentropy'
-    metrics = 'dice'
-    optimizer = 'adam'
-    learning_rate = 0.001
+#if use_default_advanced_parameters:
+    #print("Default advanced parameters enabled")
+    #batch_size = 3
+    #training_shape = (256,256,8,1)
+    #validation_split_in_percent = 50
+    #downscaling_in_xy = 1
+    #random_crop = True
+    #binary_target = True
+    #loss_function = 'weighted_binary_crossentropy'
+    #metrics = 'dice'
+    #optimizer = 'adam'
+    #learning_rate = 0.001
 #@markdown ###Checkpointing parameters
-#checkpointing_period = 1 #@param {type:"number"}
-checkpointing_period = "epoch"
+checkpointing_period = 1 #@param {type:"number"}
+#checkpointing_period = "epoch"
 #@markdown  <font size = 3>If chosen, only the best checkpoint is saved. Otherwise a checkpoint is saved every epoch:
-save_best_only = True #@param {type:"boolean"}
+save_best_only = False #@param {type:"boolean"}
 
 #@markdown ###Resume training
 resume_training = False #@param {type:"boolean"}
@@ -299,17 +299,6 @@ if random_crop:
 else:
     true_patch_size = src_down.shape
 
-def scroll_in_z(z):
-    src_down = transform.downscale_local_mean(src_sample[z-1], (downscaling_in_xy,downscaling_in_xy))
-    tgt_down = transform.downscale_local_mean(tgt_sample[z-1], (downscaling_in_xy,downscaling_in_xy))
-    if random_crop:
-        src_slice = src_down[x_rand:training_shape[0]+x_rand, y_rand:training_shape[1]+y_rand]
-        tgt_slice = tgt_down[x_rand:training_shape[0]+x_rand, y_rand:training_shape[1]+y_rand]
-    else:
-
-        src_slice = transform.resize(src_down, (training_shape[0], training_shape[1]), mode='constant', preserve_range=True)
-        tgt_slice = transform.resize(tgt_down, (training_shape[0], training_shape[1]), mode='constant', preserve_range=True)
-
     
 # Save model parameters
 params =  {'training_source': training_source,
@@ -329,7 +318,7 @@ params =  {'training_source': training_source,
            'optimizer':optimizer,
            'metrics':metrics}
 
-neptune_run['parameters'] = params
+utils.neptune_run['parameters'] = params
 
 params_df = pd.DataFrame.from_dict(params, orient='index')
 
@@ -390,7 +379,7 @@ if add_custom_augmenters:
         augmentations.append(aug_func)
 
 #@markdown ###Elastic deformations
-add_elastic_deform = True  #@param {type:"boolean"}
+add_elastic_deform = False  #@param {type:"boolean"}
 sigma =  2#@param {type:"number"}
 points =  2#@param {type:"number"}
 order =  1#@param {type:"number"}
@@ -465,7 +454,7 @@ model.train(epochs=number_of_epochs,
             learning_rate=learning_rate,
             ckpt_period=checkpointing_period,
             save_best_ckpt_only=save_best_only,
-            ckpt_path=last_ckpt_path, neptune_run=neptune_run)
+            ckpt_path=last_ckpt_path, neptune_run=utils.neptune_run)
 #print(_weighted_binary_crossentropy)
 print('Training successfully completed!')
 dt = time.time() - start
@@ -668,7 +657,7 @@ tifffile.imwrite(pred_max_path, pred_max_proj.astype('float32'), imagej=True)
 source_max = tifffile.imread(source_max_path)
 pred_max = tifffile.imread(pred_max_path)
 
-neptune_run['source_max'].upload(File.as_image(source_max))
-neptune_run['pred_max'].upload(File.as_image(pred_max))
+utils.neptune_run['source_max'].upload(File.as_image(source_max))
+utils.neptune_run['pred_max'].upload(File.as_image(pred_max))
 
 
