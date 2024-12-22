@@ -131,7 +131,7 @@ else:
 
 parser = argparse.ArgumentParser(description = "train")
 
-parser.add_argument("--number_of_epochs",nargs="?", default=2,  type=int, required=False)
+parser.add_argument("--number_of_epochs",nargs="?", default=10,  type=int, required=False)
 
 parser.add_argument("--model_name",nargs="?", default='model1', type=str, required=False)
 

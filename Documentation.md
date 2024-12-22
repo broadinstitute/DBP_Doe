@@ -105,7 +105,7 @@ Once running it locally, I edited the code to access the local files for source 
 I added the source and target images in the mounted folder after mounting which meant I need to re-mount so docker was able to find it and I also just mentioned the folder name without giving the entire path since the docker is alerady in the mounted folder. These changes helped in making the script run locally and also was training with one image that I provided. 
 
 
-Based on the comparison between the code that I had for the local run or on the docker with the code from the DL4MicEverywhere notebook (3D UNet), we found only the `if` statement in the following function being commented out earlier since we had an error.
+Based on the comparison between the code that I had for the local run (the utils file specifically) or on the docker with the code from the DL4MicEverywhere notebook (3D UNet), we found only the `if` statement in the following function being commented out earlier since we had an error.
 
 ```
 def deform_volume(self, src_vol, tgt_vol):
@@ -123,3 +123,8 @@ def deform_volume(self, src_vol, tgt_vol):
 I am trying to run the script again uncommenting those. If that works well I will proceed with the same code else I will start with the notebook that is on `DL4MicEverywhere`. 
 
 I will update the results here. 
+
+2024/12/20 
+
+
+All the jobs that were submitted on the 20th were on hold since the machines did not match the requirements. I have to check if this is due to some of the changes that were made to CHTC recently or something else. (This might not be the reason since the test jobs that were tested on the 19th evening was all fine - these had lesser epochs)

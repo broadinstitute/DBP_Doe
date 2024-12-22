@@ -1,17 +1,12 @@
 ,0
-training_source,source
-training_target,target
+training_source,data/source
+training_target,data/target
 model_name,testmodel
-model_path,test_model
-number_of_epochs,2
-batch_size,24
-training_shape,"(64, 64, 8, 1)"
+model_path,data/test_model
+number_of_epochs,10
+batch_size,3
+training_shape,"(256, 256, 8, 1)"
 downscaling,1
-true_patch_size,"(314, 554)"
-val_split,0.5
-random_crop,False
-learning_rate,0.001
-patch_size,"(64, 64, 8)"
-loss_function,weighted_binary_crossentropy
-optimizer,adam
-metrics,dice
+true_patch_size,
+val_split,0.2
+random_crop,True
