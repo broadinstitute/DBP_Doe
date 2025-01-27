@@ -280,7 +280,8 @@ class MultiPageTiffGenerator(Sequence):
 
                 source_batch[batch,:,:,i,0] = src_crop
                 target_batch[batch,:,:,i,0] = tgt_crop
-
+                print("The shape of the tgt_crop is:", tgt_crop.shape)
+                print("The shape of the target_batch is:", target_batch[batch,:,:,i,0].shape)
         if self.augment:
             # On-the-fly data augmentation
             source_batch, target_batch = self.augment_volume(source_batch, target_batch)
@@ -362,8 +363,8 @@ class MultiPageTiffGenerator(Sequence):
                                                                 sigma=self.deform_sigma,
                                                                 points=self.deform_points,
                                                                 order=self.deform_order)
-       # if self.binary_target:
-           # tgt_dfrm = tgt_dfrm > 0.1
+        if self.binary_target:
+           tgt_dfrm = tgt_dfrm > 0.1
 
         return self._min_max_scaling(src_dfrm), tgt_dfrm
 
@@ -1110,7 +1111,7 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 #@markdown <font size = 3>If not, please change:
 
 batch_size = args.batch_size #@param {type:"number"}
-patch_size = (64,64,8) #@param {type:"number"} # in pixels
+patch_size = (32,32,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'randomly crop to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
