@@ -128,3 +128,90 @@ I will update the results here.
 
 
 All the jobs that were submitted on the 20th were on hold since the machines did not match the requirements. I have to check if this is due to some of the changes that were made to CHTC recently or something else. (This might not be the reason since the test jobs that were tested on the 19th evening was all fine - these had lesser epochs)
+
+
+2025/01/21
+
+Since all the submitted jobs were idle I wrote to CHTC team at UWisconsin-Madison and Andrew Owen replied the following, 
+
+**"looking at the last job you submitted, it appears that you are requiring the job to run on "coba2000.chtc.wisc.edu" *and* that it run on CentOS7 or CentOS8. Since coba2000 is running CentOS9, the conflicting requirements would explain why your jobs are not starting."**
+
+And this is what he recommended, 
+
+**"In your submit file, change the line
+
+requirements = (Machine == "coba2000.chtc.wisc.edu") && (OpSysMajorVer == 7 ||
+OpSysMajorVer == 8)
+
+to
+
+requirements = (Machine == "coba2000.chtc.wisc.edu")"** 
+
+After making the above changes, I was getting the following error, 
+
+"Traceback (most recent call last): File "/var/lib/condor/execute/slot1/dir_1550131/FromScratch.py", line 1225, in <module> src_sample = tifffile.imread(training_source_sample) File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 1094, in imread with TiffFile( File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 4035, in __init__ fh = FileHandle(file, mode=mode, name=name, offset=offset, size=size) File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 14020, in __init__ self.open() File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 14035, in open self._fh = open( FileNotFoundError: [Errno 2] No such file or directory: '/var/lib/condor/execute/slot1/dir_1550131/doe'
+2025/01/21 14:40:26	Traceback (most recent call last): File "/var/lib/condor/execute/slot1/dir_1550131/FromScratch.py", line 1225, in <module> src_sample = tifffile.imread(training_source_sample) File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 1094, in imread with TiffFile( File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 4035, in __init__ fh = FileHandle(file, mode=mode, name=name, offset=offset, size=size) File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 14020, in __init__ self.open() File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 14035, in open self._fh = open(FileNotFoundError: [Errno 2] No such file or directory: '/var/lib/condor/execute/slot1/dir_1550131/doe'
+"
+
+Andrew suggested to do the following,  
+
+"I did notice that you had "universe = docker" in your submit file.
+HTCondor has been slowly moving away from that to a general "container"
+universe. In principle, they should work the same, but may not in practice.
+
+You can try replacing
+
+universe = docker
+docker_image = yourDocker/image:tag
+
+with
+
+universe = container
+container_image = docker://yourDocker/image:tag
+
+in your submit file.
+"
+
+With all of the above changes, the jobs get submitted but I get the following error, 
+
+```
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.10/dist-packages/tensorflow/python/ops/script_ops.py", line 267, in __call__
+    ret = func(*args)
+
+  File "/usr/local/lib/python3.10/dist-packages/tensorflow/python/autograph/impl/api.py", line 642, in wrapper
+    return func(*args, **kwargs)
+
+  File "/usr/local/lib/python3.10/dist-packages/tensorflow/python/data/ops/from_generator_op.py", line 198, in generator_py_func
+    values = next(generator_state.get_iterator(iterator_id))
+
+  File "/usr/local/lib/python3.10/dist-packages/keras/engine/data_adapter.py", line 902, in wrapped_generator
+    for data in generator_fn():
+
+  File "/usr/local/lib/python3.10/dist-packages/keras/engine/data_adapter.py", line 1049, in generator_fn
+    yield x[i]
+
+  File "/var/lib/condor/execute/slot1/dir_1818261/FromScratch.py", line 282, in __getitem__
+    target_batch[batch,:,:,i,0] = tgt_crop
+
+ValueError: could not broadcast input array from shape (31,32) into shape (32,32)
+
+
+         [[{{node PyFunc}}]]
+         [[IteratorGetNext]]
+0 successful operations.
+0 derived errors ignored. [Op:__inference_train_function_7465]
+tar: output: Cannot stat: No such file or directory
+tar: Exiting with failure status due to previous errors
+
+```
+
+Although the same code was running without any errors earlier???? I tried changing the patch size but did not help. 
+
+
+I tried to print out the shapes to see what is going on and I saw the shapes are the same (???), 
+
+![alt text](image-2.png)
+
+
