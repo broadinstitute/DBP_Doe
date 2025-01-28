@@ -1,0 +1,12 @@
+,0
+training_source,data/source
+training_target,data/target
+model_name,testmodel
+model_path,data/test_model
+number_of_epochs,10
+batch_size,3
+training_shape,"(256, 256, 8, 1)"
+downscaling,1
+true_patch_size,
+val_split,0.2
+random_crop,True

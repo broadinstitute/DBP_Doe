@@ -46,23 +46,6 @@ import numpy as np
 import tensorflow as tf
 print("TensorFlow version: {}".format(tf.__version__))
 
-# from keras import backend as K
-
-# from keras.layers import Conv3D
-# from keras.layers import BatchNormalization
-# from keras.layers import ReLU
-# from keras.layers import MaxPooling3D
-# from keras.layers import Conv3DTranspose
-# from keras.layers import Input
-# from keras.layers import Concatenate
-
-# from keras.models import Model
-
-# from keras.utils import Sequence
-# from keras.callbacks import ModelCheckpoint
-# from keras.callbacks import CSVLogger
-# from keras.callbacks import Callback
-
 from tensorflow.keras import backend as K
 
 from tensorflow.keras.layers import Conv3D
@@ -84,13 +67,6 @@ from tensorflow.keras.metrics import RootMeanSquaredError
 
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop
 
-from ipywidgets import interact
-from ipywidgets import interactive
-from ipywidgets import fixed
-from ipywidgets import interact_manual
-import ipywidgets as widgets
-
-from fpdf import FPDF, HTMLMixin
 from datetime import datetime
 import subprocess
 from pip._internal.operations.freeze import freeze
@@ -419,22 +395,6 @@ class SampleImageCallback(Callback):
         self.model_path = model_path
         self.save = save
 
-    #def on_epoch_end(self, epoch, logs={}):
-        #sample_predict = self.model.predict_on_batch(self.sample_data)
-
-        #f=plt.figure(figsize=(16,8))
-        #plt.subplot(1,2,1)
-        #plt.imshow(self.sample_data[0,:,:,0,0], interpolation='nearest', cmap='gray')
-        #plt.title('Sample source')
-        #plt.axis('off');
-
-        #plt.subplot(1,2,2)
-        #plt.imshow(sample_predict[0,:,:,0,0], interpolation='nearest', cmap='magma')
-        #plt.title('Predicted target')
-        #plt.axis('off');
-
-        #plt.show()
-
         if self.save:
             plt.savefig(self.model_path + '/epoch_' + str(epoch+1) + '.png')
 
@@ -589,13 +549,7 @@ class Unet3D:
 
         last_ckpt_name = ckpt_dir + '/' + model_name + '_last.hdf5'
         self.model.save_weights(last_ckpt_name)
-        #history = history_callback.history
-        #print(history)
-        #print(history.keys())
-        #csv_file_path = 'log_dir/training_evaluation.csv'
-        #df = pd.read_csv(csv_file_path)
-        #print(df)
-        #print(df.columns)
+       
         loss_history = []
         val_loss_history = []
         epoch_history = []
@@ -614,11 +568,6 @@ class Unet3D:
                 val_dice_coefficient_history.append(float(row['val_dice_coefficient']))
                 print(row)
 
-        #print(loss_history)
-        #print(val_loss_history)
-        #print(f'This is validation step:{validation_steps}')
-       # df = pd.read_csv('csv_out_name')
-       # print(df.columns)
 
 
         # Log loss values to Neptune
@@ -720,292 +669,6 @@ class Unet3D:
 
         return pred_volume
 
-def pdf_export(trained = False, augmentation = False, pretrained_model = False):
-  class MyFPDF(FPDF, HTMLMixin):
-    pass
-
-  pdf = MyFPDF()
-  pdf.add_page()
-  pdf.set_right_margin(-1)
-  pdf.set_font("Arial", size = 11, style='B')
-
-  day = datetime.now()
-  datetime_str = str(day)[0:10]
-
-  Header = 'Training report for '+Network+' model ('+model_name+')\nDate: '+datetime_str
-  pdf.multi_cell(180, 5, txt = Header, align = 'L')
-  pdf.ln(1)
-
-  # add another cell
-  if trained:
-    training_time = "Training time: "+str(hour)+ "hour(s) "+str(mins)+"min(s) "+str(round(sec))+"sec(s)"
-    pdf.cell(190, 5, txt = training_time, ln = 1, align='L')
-  pdf.ln(1)
-
-  Header_2 = 'Information for your materials and methods:'
-  pdf.cell(190, 5, txt=Header_2, ln=1, align='L')
-  pdf.ln(1)
-
-  all_packages = ''
-  for requirement in freeze(local_only=True):
-    all_packages = all_packages+requirement+', '
-  #print(all_packages)
-
-  #Main Packages
-  main_packages = ''
-  version_numbers = []
-  for name in ['tensorflow','numpy','keras']:
-    find_name=all_packages.find(name)
-    main_packages = main_packages+all_packages[find_name:all_packages.find(',',find_name)]+', '
-    #Version numbers only here:
-    version_numbers.append(all_packages[find_name+len(name)+2:all_packages.find(',',find_name)])
-
-  try:
-    cuda_version = subprocess.run(["nvcc","--version"],stdout=subprocess.PIPE)
-    cuda_version = cuda_version.stdout.decode('utf-8')
-    cuda_version = cuda_version[cuda_version.find(', V')+3:-1]
-  except:
-    cuda_version = ' - No cuda found - '
-  try:
-    gpu_name = subprocess.run(["nvidia-smi"],stdout=subprocess.PIPE)
-    gpu_name = gpu_name.stdout.decode('utf-8')
-    gpu_name = gpu_name[gpu_name.find('Tesla'):gpu_name.find('Tesla')+10]
-  except:
-    gpu_name = ' - No GPU found - '
-  #print(cuda_version[cuda_version.find(', V')+3:-1])
-  #print(gpu_name)
-
-  if os.path.isdir(training_source):
-    shape = io.imread(training_source+'/'+os.listdir(training_source)[0]).shape
-  elif os.path.isfile(training_source):
-    shape = io.imread(training_source).shape
-  else:
-    print('Cannot read training data.')
-
-  dataset_size = len(train_generator)
-
-  text = 'The '+Network+' model was trained from scratch for '+str(number_of_epochs)+' epochs on '+str(dataset_size)+' paired image patches (image dimensions: '+str(shape)+', patch size: ('+str(patch_size)+') with a batch size of '+str(batch_size)+' and a '+loss_function+' loss function, using the '+Network+' ZeroCostDL4Mic notebook (v '+Notebook_version[0]+') (von Chamier & Laine et al., 2020). Key python packages used include tensorflow (v '+version_numbers[0]+'), keras (v '+version_numbers[2]+'), numpy (v '+version_numbers[1]+'), cuda (v '+cuda_version+'). The training was accelerated using a '+gpu_name+'GPU.'
-
-  if pretrained_model:
-    text = 'The '+Network+' model was trained for '+str(number_of_epochs)+' epochs on '+str(dataset_size)+' paired image patches (image dimensions: '+str(shape)+', patch_size: '+str(patch_size)+') with a batch size of '+str(batch_size)+' and a '+loss_function+' loss function, using the '+Network+' ZeroCostDL4Mic notebook (v '+Notebook_version[0]+') (von Chamier & Laine et al., 2020). The model was retrained from a pretrained model. Key python packages used include tensorflow (v '+version_numbers[0]+'), keras (v '+version_numbers[2]+'), numpy (v '+version_numbers[1]+'), cuda (v '+cuda_version+'). The training was accelerated using a '+gpu_name+'GPU.'
-
-  pdf.set_font('')
-  pdf.set_font_size(10.)
-  pdf.multi_cell(190, 5, txt = text, align='L')
-  pdf.ln(1)
-  pdf.set_font('')
-  pdf.set_font('Arial', size = 10, style = 'B')
-  pdf.cell(28, 5, txt='Augmentation: ', ln=0)
-  pdf.set_font('')
-  if augmentation:
-    aug_text = 'The dataset was augmented by'
-    if add_gaussian_blur == True:
-      aug_text = aug_text+'\n- gaussian blur'
-    if add_linear_contrast == True:
-      aug_text = aug_text+'\n- linear contrast'
-    if add_additive_gaussian_noise == True:
-      aug_text = aug_text+'\n- additive gaussian noise'
-    if augmenters != '':
-      aug_text = aug_text+'\n- imgaug augmentations: '+augmenters
-    if add_elastic_deform == True:
-      aug_text = aug_text+'\n- elastic deformation'
-  else:
-    aug_text = 'No augmentation was used for training.'
-  pdf.multi_cell(190, 5, txt=aug_text, align='L')
-  pdf.ln(1)
-  pdf.set_font('Arial', size = 11, style = 'B')
-  pdf.cell(180, 5, txt = 'Parameters', align='L', ln=1)
-  pdf.set_font('')
-  pdf.set_font_size(10.)
-  if use_default_advanced_parameters:
-    pdf.cell(200, 5, txt='Default Advanced Parameters were enabled')
-  pdf.cell(200, 5, txt='The following parameters were used for training:')
-  pdf.ln(1)
-  html = """
-  <table width=60% style="margin-left:0px;">
-    <tr>
-      <th width = 50% align="left">Parameter</th>
-      <th width = 50% align="left">Value</th>
-    </tr>
-    <tr>
-      <td width = 50%>number_of_epochs</td>
-      <td width = 50%>{0}</td>
-    </tr>
-    <tr>
-      <td width = 50%>batch_size</td>
-      <td width = 50%>{1}</td>
-    </tr>
-    <tr>
-      <td width = 50%>patch_size</td>
-      <td width = 50%>{2}</td>
-    </tr>
-    <tr>
-      <td width = 50%>image_pre_processing</td>
-      <td width = 50%>{3}</td>
-    </tr>
-    <tr>
-      <td width = 50%>validation_split_in_percent</td>
-      <td width = 50%>{4}</td>
-    </tr>
-      <tr>
-      <td width = 50%>downscaling_in_xy</td>
-      <td width = 50%>{5}</td>
-    </tr>
-      <tr>
-      <td width = 50%>binary_target</td>
-      <td width = 50%>{6}</td>
-    </tr>
-    <tr>
-      <td width = 50%>loss_function</td>
-      <td width = 50%>{7}</td>
-    </tr>
-    <tr>
-      <td width = 50%>metrics</td>
-      <td width = 50%>{8}</td>
-    </tr>
-    <tr>
-      <td width = 50%>optimizer</td>
-      <td width = 50%>{9}</td>
-    </tr>
-    <tr>
-      <td width = 50%>checkpointing_period</td>
-      <td width = 50%>{10}</td>
-    </tr>
-    <tr>
-      <td width = 50%>save_best_only</td>
-      <td width = 50%>{11}</td>
-    </tr>
-    <tr>
-      <td width = 50%>resume_training</td>
-      <td width = 50%>{12}</td>
-    </tr>
-  </table>
-  """.format(number_of_epochs,batch_size,str(patch_size[0])+'x'+str(patch_size[1])+'x'+str(patch_size[2]),image_pre_processing, validation_split_in_percent, downscaling_in_xy, str(binary_target), loss_function, metrics, optimizer, checkpointing_period, str(save_best_only), str(resume_training))
-  pdf.write_html(html)
-
-  #pdf.multi_cell(190, 5, txt = text_2, align='L')
-  pdf.set_font("Arial", size = 11, style='B')
-  pdf.ln(1)
-  pdf.cell(190, 5, txt = 'Training Dataset', align='L', ln=1)
-  pdf.set_font('')
-  pdf.set_font('Arial', size = 10, style = 'B')
-  pdf.cell(30, 5, txt= 'Training_source:', align = 'L', ln=0)
-  pdf.set_font('')
-  pdf.multi_cell(170, 5, txt = training_source, align = 'L')
-  pdf.ln(1)
-  pdf.set_font('')
-  pdf.set_font('Arial', size = 10, style = 'B')
-  pdf.cell(28, 5, txt= 'Training_target:', align = 'L', ln=0)
-  pdf.set_font('')
-  pdf.multi_cell(170, 5, txt = training_target, align = 'L')
-  pdf.ln(1)
-  pdf.set_font('')
-  pdf.set_font('Arial', size = 10, style = 'B')
-  pdf.cell(21, 5, txt= 'Model Path:', align = 'L', ln=0)
-  pdf.set_font('')
-  pdf.multi_cell(170, 5, txt = model_path+'/'+model_name, align = 'L')
-  pdf.ln(1)
-  #pdf.cell(60, 5, txt = 'Example Training pair (single slice)', ln=1)
-  #pdf.ln(1)
-  #exp_size = io.imread(base_path + '/TrainingDataExample_Unet3D.png').shape
-  #pdf.image(base_path + '/TrainingDataExample_Unet3D.png', x = 11, y = None, w = round(exp_size[1]/8), h = round(exp_size[0]/8))
-  #pdf.ln(1)
-  ##ref_1 = 'References:\n - ZeroCostDL4Mic: von Chamier, Lucas & Laine, Romain, et al. "Democratising deep learning for microscopy with ZeroCostDL4Mic." Nature Communications (2021).'
-  #pdf.multi_cell(190, 5, txt = ref_1, align='L')
-  #pdf.ln(1)
-  #ref_2 = '- Unet 3D: Çiçek, Özgün, et al. "3D U-Net: learning dense volumetric segmentation from sparse annotation." International conference on medical image computing and computer-assisted intervention. Springer, Cham, 2016.'
-  #pdf.multi_cell(190, 5, txt = ref_2, align='L')
-  # if Use_Data_augmentation:
-  #   ref_4 = '- Augmentor: Bloice, Marcus D., Christof Stocker, and Andreas Holzinger. "Augmentor: an image augmentation library for machine learning." arXiv preprint arXiv:1708.04680 (2017).'
-  #   pdf.multi_cell(190, 5, txt = ref_4, align='L')
-  #pdf.ln(3)
-  #reminder = 'Important:\nRemember to perform the quality control step on all newly trained models\nPlease consider depositing your training dataset on Zenodo'
-  #pdf.set_font('Arial', size = 11, style='B')
-  #pdf.multi_cell(190, 5, txt=reminder, align='C')
-  #pdf.ln(1)
-
-  pdf.output(model_path+'/'+model_name+'/'+model_name+'_training_report.pdf')
-
-  print('------------------------------')
-  print('PDF report exported in '+model_path+'/'+model_name+'/')
-
-
-def qc_pdf_export():
-  class MyFPDF(FPDF, HTMLMixin):
-    pass
-
-  pdf = MyFPDF()
-  pdf.add_page()
-  pdf.set_right_margin(-1)
-  pdf.set_font("Arial", size = 11, style='B')
-
-  Network = 'U-Net 3D'
-
-  day = datetime.now()
-  datetime_str = str(day)[0:10]
-
-  Header = 'Quality Control report for '+Network+' model ('+qc_model_name+')\nDate: '+datetime_str
-  pdf.multi_cell(180, 5, txt = Header, align = 'L')
-  pdf.ln(1)
-
-  all_packages = ''
-  for requirement in freeze(local_only=True):
-    all_packages = all_packages+requirement+', '
-
-  pdf.set_font('')
-  pdf.set_font('Arial', size = 11, style = 'B')
-  pdf.ln(2)
-  pdf.cell(190, 5, txt = 'Loss curves', ln=1, align='L')
-  pdf.ln(1)
-  if os.path.exists(os.path.join(qc_model_path,qc_model_name,'Quality Control')+'/lossCurvePlots.png'):
-    exp_size = io.imread(os.path.join(qc_model_path,qc_model_name,'Quality Control')+'/lossCurvePlots.png').shape
-    pdf.image(os.path.join(qc_model_path,qc_model_name,'Quality Control')+'/lossCurvePlots.png', x = 11, y = None, w = round(exp_size[1]/8), h = round(exp_size[0]/8))
-  else:
-    pdf.set_font('')
-    pdf.set_font('Arial', size=10)
-    pdf.multi_cell(190, 5, txt='If you would like to see the evolution of the loss function during training please play the first cell of the QC section in the notebook.')
-  pdf.ln(2)
-  pdf.set_font('')
-  pdf.set_font('Arial', size = 10, style = 'B')
-  pdf.ln(3)
-  pdf.cell(80, 5, txt = 'Example Quality Control Visualisation', ln=1)
-  pdf.ln(1)
-  exp_size = io.imread(os.path.join(qc_model_path,qc_model_name,'Quality Control')+'/QC_example_data.png').shape
-  pdf.image(os.path.join(qc_model_path,qc_model_name,'Quality Control')+'/QC_example_data.png', x = 5, y = None, w = round(exp_size[1]/12), h = round(exp_size[0]/8))
-  pdf.ln(1)
-  pdf.set_font('')
-  pdf.set_font('Arial', size = 11, style = 'B')
-  pdf.ln(1)
-  pdf.cell(180, 5, txt = 'IoU threshold optimisation', align='L', ln=1)
-  pdf.set_font('')
-  pdf.set_font_size(10.)
-  pdf.ln(1)
-  pdf.cell(120, 5, txt='Highest IoU is {:.4f} with a threshold of {}'.format(best_iou, best_thresh), align='L', ln=1)
-  pdf.ln(2)
-  exp_size = io.imread(os.path.join(qc_model_path,qc_model_name,'Quality Control')+'/QC_IoU_analysis.png').shape
-  pdf.image(os.path.join(qc_model_path,qc_model_name,'Quality Control')+'/QC_IoU_analysis.png', x=16, y=None, w = round(exp_size[1]/6), h = round(exp_size[0]/6))
-  pdf.ln(1)
-  pdf.set_font('')
-  pdf.set_font_size(10.)
-  ref_1 = 'References:\n - ZeroCostDL4Mic: von Chamier, Lucas & Laine, Romain, et al. "Democratising deep learning for microscopy with ZeroCostDL4Mic." Nature Communications (2021).'
-  pdf.multi_cell(190, 5, txt = ref_1, align='L')
-  pdf.ln(1)
-  ref_2 = '- Unet 3D: Çiçek, Özgün, et al. "3D U-Net: learning dense volumetric segmentation from sparse annotation." International conference on medical image computing and computer-assisted intervention. Springer, Cham, 2016.'
-  pdf.multi_cell(190, 5, txt = ref_2, align='L')
-  pdf.ln(1)
-
-  pdf.ln(3)
-  reminder = 'To find the parameters and other information about how this model was trained, go to the training_report.pdf of this model which should be in the folder of the same name.'
-
-  pdf.set_font('Arial', size = 11, style='B')
-  pdf.multi_cell(190, 5, txt=reminder, align='C')
-  pdf.ln(1)
-
-  pdf.output(os.path.join(qc_model_path,qc_model_name,'Quality Control')+'/'+qc_model_name+'_QC_report.pdf')
-
-  print('------------------------------')
-  print('QC PDF report exported in '+os.path.join(qc_model_path,qc_model_name,'Quality Control')+'/')
-
 
 # -------------- Other definitions -----------
 W  = '\033[0m'  # white (normal)
@@ -1022,15 +685,6 @@ class bcolors:
   NORMAL = '\033[0m'  # white (normal)
 
 
-# Check if this is the latest version of the notebook
-# Latest_notebook_version = pd.read_csv("https://raw.githubusercontent.com/HenriquesLab/ZeroCostDL4Mic/master/Colab_notebooks/Latest_ZeroCostDL4Mic_Release.csv")
-
-# if Notebook_version == list(Latest_notebook_version.columns):
-#   print("This notebook is up-to-date.")
-
-# if not Notebook_version == list(Latest_notebook_version.columns):
-#   print(bcolors.WARNING +"A new version of this notebook has been released. We recommend that you download it at https://github.com/HenriquesLab/ZeroCostDL4Mic/wiki")
-
 All_notebook_versions = pd.read_csv("https://raw.githubusercontent.com/HenriquesLab/ZeroCostDL4Mic/master/Colab_notebooks/Latest_Notebook_versions.csv", dtype=str)
 print('Notebook version: '+Notebook_version)
 Latest_Notebook_version = All_notebook_versions[All_notebook_versions["Notebook"] == Network]['Version'].iloc[0]
@@ -1040,10 +694,6 @@ if Notebook_version == Latest_Notebook_version:
 else:
   print(bcolors.WARNING +"A new version of this notebook has been released. We recommend that you download it at https://github.com/HenriquesLab/ZeroCostDL4Mic/wiki")
 
-
-# Build requirements file for local run
-#after = [str(m) for m in sys.modules]
-#build_requirements_file(before, after)
 
 if tf.test.gpu_device_name()=='':
   print('You do not have GPU access.')
@@ -1152,15 +802,9 @@ checkpointing_period = "epoch"
 save_best_only = True #@param {type:"boolean"}
 
 #@markdown ###Resume training
-#@markdown <font size = 3>Choose if training was interrupted:
 resume_training = False #@param {type:"boolean"}
 
-#@markdown ###Transfer learning
-#@markdown <font size = 3>For transfer learning, do not select resume_training and specify a checkpoint_path below.
 
-#@markdown <font size = 3> - If the model is already downloaded or is locally available, please specify the path to the .h5 file.
-
-#@markdown <font size = 3> - To use a model from the BioImage Model Zoo, write the model ID. For example: 10.5281/zenodo.5749843
 
 pretrained_model_choice = "Model_from_file" #@param ["Model_from_file", "bioimageio_model"]
 checkpoint_path = "" #@param {type:"string"}
@@ -1209,8 +853,6 @@ if not resume_training and os.path.exists(full_model_path):
     # print('!! WARNING: Folder already exists and will be overwritten !!')
     # shutil.rmtree(full_model_path)
 
-# if not os.path.exists(full_model_path):
-#     os.makedirs(full_model_path)
 
 # Show sample image
 if os.path.isdir(training_source):
@@ -1260,27 +902,7 @@ def scroll_in_z(z):
         src_slice = transform.resize(src_down, (training_shape[0], training_shape[1]), mode='constant', preserve_range=True)
         tgt_slice = transform.resize(tgt_down, (training_shape[0], training_shape[1]), mode='constant', preserve_range=True)
 
-    #f=plt.figure(figsize=(16,8))
-    #plt.subplot(1,2,1)
-    #plt.imshow(src_slice, cmap='gray')
-    #plt.title('Training source (z = ' + str(z) + ')', fontsize=15)
-    #plt.axis('off')
-
-    #plt.subplot(1,2,2)
-    #plt.imshow(tgt_slice, cmap='magma')
-    #plt.title('Training target (z = ' + str(z) + ')', fontsize=15)
-    #plt.axis('off')
-    #plt.savefig(base_path + '/TrainingDataExample_Unet3D.png',bbox_inches='tight',pad_inches=0)
-    #plt.close()
-
-#print('This is what the training images will look like with the chosen settings')
-#interact(scroll_in_z, z=widgets.IntSlider(min=1, max=src_sample.shape[0], step=1, value=0));
-#plt.show()
-#Create a copy of an example slice and close the display.
-#scroll_in_z(z=int(src_sample.shape[0]/2))
-# If you close the display, then the users can't interactively inspect the data
-# plt.close()
-
+    
 # Save model parameters
 params =  {'training_source': training_source,
            'training_target': training_target,
@@ -1302,10 +924,6 @@ params =  {'training_source': training_source,
 neptune_run['parameters'] = params
 
 params_df = pd.DataFrame.from_dict(params, orient='index')
-
-# apply_data_augmentation = False
-# pdf_export(augmentation = apply_data_augmentation, pretrained_model = resume_training)
-
 
 #@markdown ##**Augmentation options**
 
@@ -1402,21 +1020,7 @@ if apply_data_augmentation:
   print('Data augmentation enabled.')
   sample_src_aug, sample_tgt_aug = train_generator.sample_augmentation(random.randint(0, len(train_generator)))
 
-  #def scroll_in_z(z):
-      #f=plt.figure(figsize=(16,8))
-      #plt.subplot(1,2,1)
-      #plt.imshow(sample_src_aug[0,:,:,z-1,0], cmap='gray')
-      #plt.title('Sample augmented source (z = ' + str(z) + ')', fontsize=15)
-      #plt.axis('off')
-
-      #plt.subplot(1,2,2)
-      #plt.imshow(sample_tgt_aug[0,:,:,z-1,0], cmap='magma')
-      #plt.title('Sample training target (z = ' + str(z) + ')', fontsize=15)
-      #plt.axis('off')
-
-  #print('This is what the augmented training images will look like with the chosen settings')
-  #interact(scroll_in_z, z=widgets.IntSlider(min=1, max=sample_src_aug.shape[3], step=1, value=0));
-
+  
 else:
   print('Data augmentation disabled.')
 
@@ -1461,10 +1065,6 @@ mins, sec = divmod(dt, 60)
 hour, mins = divmod(mins, 60)
 print("Time elapsed:",hour, "hour(s)",mins,"min(s)",round(sec),"sec(s)")
 
-#Create a pdf document with training summary
-
-#pdf_export(trained = True, augmentation = apply_data_augmentation, pretrained_model = resume_training)
-
 
 #@markdown ##Compare prediction and ground-truth on testing data
 
@@ -1506,8 +1106,6 @@ prediction = model.predict(testing_source, last_ckpt_path,
 tifffile.imwrite(predict_path, prediction.astype('float32'), imagej=True)
 
 print('Predicted images!')
-
-#qc_metrics_path = full_model_path + '/Quality Control/QC_metrics_' + qc_model_name + '.csv'
 
 test_target = tifffile.imread(testing_target)
 test_source = tifffile.imread(testing_source)
