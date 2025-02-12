@@ -263,11 +263,12 @@ class MultiPageTiffGenerator(Sequence):
                     source_batch[batch,:,:,i,0] = src_crop
                     target_batch[batch,:,:,i,0] = tgt_crop
                     truecount += 1 
-                    print(f"The value of truecount is {truecount}")
                 except:
-		    print("Shape did not match")
+                    print("Shape did not match")
                     falsecount += 1
-                    print(f"The value of falsecount is {falsecount}")
+                
+                print(f"The value of truecount is {truecount}")
+                print(f"The value of falsecount is {falsecount}")
         if self.augment:
             # On-the-fly data augmentation
             source_batch, target_batch = self.augment_volume(source_batch, target_batch)
