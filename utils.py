@@ -194,7 +194,7 @@ class MultiPageTiffGenerator(Sequence):
                     return math.floor(augment_factor * (1 - self.val_split) * self.source.shape[0] / self.batch_size)
     
     __import__("IPython").embed()
-    def __getitem__(self, idx, truecount, falsecount):
+    def __getitem__(self, idx):
         truecount = 0
         falsecount = 0
         source_batch = np.empty((self.batch_size,
