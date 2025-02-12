@@ -194,7 +194,9 @@ class MultiPageTiffGenerator(Sequence):
                     return math.floor(augment_factor * (1 - self.val_split) * self.source.shape[0] / self.batch_size)
     
     __import__("IPython").embed()
-    def __getitem__(self, idx):
+    def __getitem__(self, idx, truecount, falsecount):
+        truecount = 0
+        falsecount = 0
         source_batch = np.empty((self.batch_size,
                                  self.shape[0],
                                  self.shape[1],
@@ -256,10 +258,16 @@ class MultiPageTiffGenerator(Sequence):
                 else:
                     src_crop = src_list[i]
                     tgt_crop = tgt_list[i]
-
-                source_batch[batch,:,:,i,0] = src_crop
-                target_batch[batch,:,:,i,0] = tgt_crop
-
+              
+                try:
+                    source_batch[batch,:,:,i,0] = src_crop
+                    target_batch[batch,:,:,i,0] = tgt_crop
+                    truecount += 1 
+                    print(f"The value of truecount is {truecount}")
+                except:
+		    print("Shape did not match")
+                    falsecount += 1
+                    print(f"The value of falsecount is {falsecount}")
         if self.augment:
             # On-the-fly data augmentation
             source_batch, target_batch = self.augment_volume(source_batch, target_batch)

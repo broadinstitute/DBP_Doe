@@ -160,14 +160,14 @@ parser.add_argument("--optimizer", type=str, default='adam', required=False)
 args = parser.parse_args()
 
 #@markdown ###Path to training data:
-training_source = '/app/source' #@param {type:"string"}
-training_target = '/app/target'#@param {type:"string"}
+training_source = args.training_source #@param {type:"string"}
+training_target = args.training_target #@param {type:"string"}
 
 #@markdown ---
 
 #@markdown ###Model name and path to model folder:
-model_name = 'testmodel' #@param {type:"string"}
-model_path = 'test_model' #@param {type:"string"}
+model_name = args.model_name  #@param {type:"string"}
+model_path = args.model_path #@param {type:"string"}
 
 full_model_path = os.path.join(model_path, model_name)
 
