@@ -92,7 +92,7 @@ neptune_callback = NeptuneCallback(run=neptune_run)
 
 #Create a variable to get and store relative base path
 base_path = os.getcwd()
-  
+print(f"This is the base path: {base_path}")
 # Defining classes for training and validation 
 
 # Define MultiPageTiffGenerator class
