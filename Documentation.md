@@ -122,7 +122,9 @@ def deform_volume(self, src_vol, tgt_vol):
 
 I am trying to run the script again uncommenting those. If that works well I will proceed with the same code else I will start with the notebook that is on `DL4MicEverywhere`. 
 
-I will update the results here. 
+Uncommenting the `if` statement above resulted in better dice coefficient during the validation phase. This is in the commit - https://github.com/broadinstitute/DBP_Doe/commit/8c7f5cfadc770b833a1b5e816e7e1cb5e6fc8789
+
+
 
 2024/12/20 
 
@@ -152,6 +154,9 @@ After making the above changes, I was getting the following error,
 "Traceback (most recent call last): File "/var/lib/condor/execute/slot1/dir_1550131/FromScratch.py", line 1225, in <module> src_sample = tifffile.imread(training_source_sample) File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 1094, in imread with TiffFile( File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 4035, in __init__ fh = FileHandle(file, mode=mode, name=name, offset=offset, size=size) File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 14020, in __init__ self.open() File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 14035, in open self._fh = open( FileNotFoundError: [Errno 2] No such file or directory: '/var/lib/condor/execute/slot1/dir_1550131/doe'
 2025/01/21 14:40:26	Traceback (most recent call last): File "/var/lib/condor/execute/slot1/dir_1550131/FromScratch.py", line 1225, in <module> src_sample = tifffile.imread(training_source_sample) File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 1094, in imread with TiffFile( File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 4035, in __init__ fh = FileHandle(file, mode=mode, name=name, offset=offset, size=size) File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 14020, in __init__ self.open() File "/usr/local/lib/python3.10/dist-packages/tifffile/tifffile.py", line 14035, in open self._fh = open(FileNotFoundError: [Errno 2] No such file or directory: '/var/lib/condor/execute/slot1/dir_1550131/doe'
 "
+
+The above error was happening because I was not running the right file on the CHTC. The DBPDOE- 407 to DBPDOE 419 are errored because I did not run the right file. 
+
 
 Andrew suggested to do the following,  
 
@@ -213,5 +218,38 @@ Although the same code was running without any errors earlier???? I tried changi
 I tried to print out the shapes to see what is going on and I saw the shapes are the same (???), 
 
 ![alt text](image-2.png)
+
+
+Beth suggested to include a `print` statement in `try` and `except` statement to see how random there is a shape mismatch which was made in this commit - https://github.com/broadinstitute/DBP_Doe/commit/6106e43dc71ee6f055d9b2230d87b0c01a83fb3f and the following commits until the one on 18th Feb, 2025. I made some errors in the indentation in adding the `print` statements hence it took a couple of commits to set it right. 
+
+2025/02/21
+
+DBPDOE-448 
+
+The error shows the following, 
+
+`/usr/local/lib/python3.10/dist-packages/IPython/paths.py:69: UserWarning: IPython parent '/' is not a writable location, using a temp directory. warn("IPython parent '{0}' is not a writable location,"`
+
+
+Things that were tried, 
+
+1. The first thing that I tried was to comment out the IPython embed statement. 
+
+`#__import__("IPython").embed()`
+
+Result of DBPDOE-450 - 
+
+`2025/02/21 10:33:17	[neptune] [warning] /var/lib/condor/execute/slot1/dir_1466459/ScriptForLocalRun.py:321: NeptuneUnsupportedType: You're attempting to log a type that is not directly supported by Neptune (<class 'tuple'>). Convert the value to a supported type, such as a string or float, or use stringify_unsupported(obj) for dictionaries or collections that contain unsupported values. For more, see https://docs.neptune.ai/help/value_of_unsupported_type
+2025/02/21 10:33:17	[neptune] [warning] /var/lib/condor/execute/slot1/dir_1466459/ScriptForLocalRun.py:321: NeptuneUnsupportedType: You're attempting to log a type that is not directly supported by Neptune (<class 'NoneType'>). Convert the value to a supported type, such as a string or float, or use stringify_unsupported(obj) for dictionaries or collections that contain unsupported values. For more, see https://docs.neptune.ai/help/value_of_unsupported_type
+2025/02/21 10:33:17	Traceback (most recent call last): File "/var/lib/condor/execute/slot1/dir_1466459/ScriptForLocalRun.py", line 405, in <module> val_generator = utils.MultiPageTiffGenerator(training_source, File "/var/lib/condor/execute/slot1/dir_1466459/utils.py", line 142, in __init__ self.on_epoch_end() File "/var/lib/condor/execute/slot1/dir_1466459/utils.py", line 337, in on_epoch_end raise ValueError('validation_split too small! Increase val_split or decrease z-depth') ValueError: validation_split too small! Increase val_split or decrease z-depth`
+
+The sample images were the EM images that I downloaded from the sample dataset so I will try after I sample one of the neurite images and see how it goes. 
+
+
+
+
+
+
+
 
 
