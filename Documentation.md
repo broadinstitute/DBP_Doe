@@ -245,11 +245,39 @@ Result of DBPDOE-450 -
 
 The sample images were the EM images that I downloaded from the sample dataset so I will try after I sample one of the neurite images and see how it goes. 
 
+**DBPDOE-451:**
+
+Based on the previous run, I changed the data to be a single image of the neurite dataset which exists in the following  folder, 
+
+`/home/sivagurunath/project/DBP_Doe/data/sourcedata_oneimage` and the image is `030422_Slide2_Animal1_all.tif` and the corresponding mask - `030422_Slide2_Animal1_all_masks.tif` which exists in the followingg  folder - `/home/sivagurunath/project/DBP_Doe/data/targetdata_oneimage`
+
+Even with the above image get the following error, 
+
+`Traceback (most recent call last): File "/var/lib/condor/execute/slot1/dir_1470856/ScriptForLocalRun.py", line 405, in <module> val_generator = utils.MultiPageTiffGenerator(training_source, File "/var/lib/condor/execute/slot1/dir_1470856/utils.py", line 142, in __init__ self.on_epoch_end() File "/var/lib/condor/execute/slot1/dir_1470856/utils.py", line 337, in on_epoch_end raise ValueError('validation_split too small! Increase val_split or decrease z-depth') ValueError: validation_split too small! Increase val_split or decrease z-depth`
+
+The image that I tested on has 22 slices. 
+
+The default value of the val_split that id mentioned in the the generator function is 0.2 but there is also an option to modify this value where it can be defined with other varaibles. The value is provided in percent and the variable name is `validation_split_in_percent`. When the set the variable value to `30` 
 
 
+**DBPDOE-452:**
 
 
+When I set the `validation_split_in_percent` variable value to `30` in `ScriptForLocalRun.py` I still get this `ValueError('validation_split too small! Increase val_split or decrease z-depth') ValueError: validation_split too small! Increase val_split or decrease z-depth` error. 
 
 
+**DBPDOE-453:**
 
+I increased the `validation_split_in_percent` variable value to `50`in `ScriptForLocalRun.py` and I also added a couple of `print` statements in places before the generator and also thi statement  - `print(f"Validation Split in generator: {getattr(val_generator, 'val_split', 'Not Found')}")` to get the value of the attribute after the generator values has been assigned. 
+
+
+The following gets printed, 
+
+![alt text](image-3.png)
+
+But I get a new error, 
+
+`Traceback (most recent call last): File "/var/lib/condor/execute/slot1/dir_2178749/ScriptForLocalRun.py", line 446, in <module> model.train(epochs=number_of_epochs, File "/var/lib/condor/execute/slot1/dir_2178749/utils.py", line 599, in train val_loss_history.append(float(row['val_loss'])) KeyError: 'val_loss'` which is very weird. 
+
+Have to get check if I am running thr correct script file or does it have something to do with the image that I am testing. 
 
