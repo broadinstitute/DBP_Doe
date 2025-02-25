@@ -281,3 +281,32 @@ But I get a new error,
 
 Have to get check if I am running thr correct script file or does it have something to do with the image that I am testing. 
 
+**DBPDOE-454:**
+
+`Traceback (most recent call last):
+  File "/var/lib/condor/execute/slot1/dir_2233032/ScriptForLocalRun.py", line 446, in <module>
+    model.train(epochs=number_of_epochs,
+  File "/var/lib/condor/execute/slot1/dir_2233032/utils.py", line 599, in train
+    val_loss_history.append(float(row['val_loss']))
+KeyError: 'val_loss'`
+
+
+**DBPDOE-455:**
+
+Traceback (most recent call last):
+  File "/var/lib/condor/execute/slot1/dir_2244432/ScriptForLocalRun.py", line 445, in <module>
+    model.train(epochs=number_of_epochs,
+  File "/var/lib/condor/execute/slot1/dir_2244432/utils.py", line 609, in train
+    neptune_run['loss'].log(loss_history)
+  File "/usr/local/lib/python3.10/dist-packages/neptune/handler.py", line 88, in inner_fun
+    return fun(self, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/neptune/handler.py", line 321, in log
+    raise ValueError("Cannot deduce value type: `value` cannot be empty")
+ValueError: Cannot deduce value type: `value` cannot be empty
+tar: output: Cannot stat: No such file or directory
+tar: Exiting with failure status due to previous errors
+
+
+After discussion with Beth, we decided to remove the csv logger since we are anyway logging these details in neptune. 
+
+
