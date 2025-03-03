@@ -307,6 +307,228 @@ tar: output: Cannot stat: No such file or directory
 tar: Exiting with failure status due to previous errors
 
 
-After discussion with Beth, we decided to remove the csv logger since we are anyway logging these details in neptune. 
+After discussion with Beth, we decided to remove the csv logger since we are anyway logging these details in neptune. The previous error on `KeyError:'val_loss'` is because the `training_evaluation.csv` is not recording the `val_loss` as it is not proceeding to the validation step.
 
+**DBPDOE-456 and 457:**
+
+
+`I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-02-25 16:56:17.018428: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+Matplotlib created a temporary config/cache directory at /var/lib/condor/execute/slot1/dir_2359170/matplotlib-hensvgte because the default path (/.config/matplotlib) is not a writable directory; it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+/usr/local/lib/python3.10/dist-packages/IPython/paths.py:69: UserWarning: IPython parent '/' is not a writable location, using a temp directory.
+  warn("IPython parent '{0}' is not a writable location,"
+2025-02-25 16:56:20.489278: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1635] Created device /device:GPU:0 with 38366 MB memory:  -> device: 0, name: NVIDIA A100-SXM4-40GB, pci bus id: 0000:01:00.0, compute capability: 8.0
+2025-02-25 16:56:20.517996: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1635] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 38366 MB memory:  -> device: 0, name: NVIDIA A100-SXM4-40GB, pci bus id: 0000:01:00.0, compute capability: 8.0
+[neptune] [warning] NeptuneUnsupportedType: You're attempting to log a type that is not directly supported by Neptune (<class 'tuple'>).
+        Convert the value to a supported type, such as a string or float, or use stringify_unsupported(obj)
+        for dictionaries or collections that contain unsupported values.
+        For more, see https://docs.neptune.ai/help/value_of_unsupported_type
+[neptune] [warning] NeptuneUnsupportedType: You're attempting to log a type that is not directly supported by Neptune (<class 'NoneType'>).
+        Convert the value to a supported type, such as a string or float, or use stringify_unsupported(obj)
+        for dictionaries or collections that contain unsupported values.
+        For more, see https://docs.neptune.ai/help/value_of_unsupported_type
+/usr/local/lib/python3.10/dist-packages/IPython/paths.py:69: UserWarning: IPython parent '/' is not a writable location, using a temp directory.
+  warn("IPython parent '{0}' is not a writable location,"
+2025-02-25 16:56:22.296001: I tensorflow/core/common_runtime/executor.cc:1197] [/device:CPU:0] (DEBUG INFO) Executor start aborting (this does not indicate an error and you can ignore this message): INVALID_ARGUMENT: You must feed a value for placeholder tensor 'Placeholder/_0' with dtype int32
+	 [[{{node Placeholder/_0}}]]
+2025-02-25 16:56:25.254305: I tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:424] Loaded cuDNN version 8600
+2025-02-25 16:56:26.386669: I tensorflow/compiler/xla/service/service.cc:169] XLA service 0x7fbd81dbd4a0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2025-02-25 16:56:26.386698: I tensorflow/compiler/xla/service/service.cc:177]   StreamExecutor device (0): NVIDIA A100-SXM4-40GB, Compute Capability 8.0
+2025-02-25 16:56:26.391333: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+2025-02-25 16:56:26.510195: I ./tensorflow/compiler/jit/device_compiler.h:180] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+tar: output: Cannot stat: No such file or directory
+tar: Exiting with failure status due to previous errors`
+
+This is the error after fixing the logs error. I need to figure out why the location is not writable. 
+
+
+Since it is not proceeding to `validation` I am going to check the following,
+
+* **DBPDOE-459:**
+I added these print statements, 
+
+`print(f"The length of the training generator is {len(train_generator)}")
+print(f"The length of the validation generator is {len(val_generator)}")`
+
+after the `train_generator` and `val_generator` in the `ScriptForLocalRUn.py` file. 
+
+**Output:**
+
+`The length of the training generator is 2
+The length of the validation generator is 0`
+
+Makes sense why vaidation is not taking place. I am going to decrease the validation percent but I will check these values first. 
+
+* **DBPDOE-460:**
+
+I added a print statement, 
+
+`print(f"Value of val_split is {val_split}")
+print(f"Value of validation_split_in_percent is {validation_split_in_percent}")`
+
+
+**Output:**
+
+`NameError                                 Traceback (most recent call last)
+File ~var/lib/condor/execute/slot1/dir_739222/ScriptForLocalRun.py:417
+    415 print(f"The length of the training generator is {len(train_generator)}")
+    416 print(f"The length of the validation generator is {len(val_generator)}")
+--> 417 print(f"Value of val_split is {val_split}")
+    418 print(f"Value of validation_split_in_percent is {validation_split_in_percent}")
+    420 if apply_data_augmentation:
+
+NameError: name 'val_split' is not defined`
+
+* **DBPDOE-461:**
+
+So added this statement, 
+`print(f"Value of val_split is {val_generator.val_split}")`
+
+Maybe because I am testing it only on one image?
+
+**Output:**
+
+`Value of val_split is 0.5
+Value of validation_split_in_percent is 50`
+
+I had only one image and probably that is why it was not going through the validation phase.  
+
+* **DBPDOE-462:**
+
+I have now added 4 images in `sourcedata_fewimages` and the respective masks in `targetdata_fewimages` to see what happens. I have edited the `docker.sub` and the `executable.sh` accordingly.
+
+**Output:**
+
+`This is the value of self is val:False
+This is the value of self is val:True
+The length of the training generator is 62
+The length of the validation generator is 15
+Value of val_split is 0.5
+Value of validation_split_in_percent is 50`
+
+Now it is good :)
+
+The predicted images were saved in the output folder or got uploaded to the neptune until I was using the `FromScratch.py`. I need to figure out what happened when I started training from the local. Some changes there now is not allowing the predicted images to be saved in the location. Is it because of the `not writable` location and hence the neptune complains about the `NoneType` since the predicted images are not saved?
+
+Until DBPDOE-388 I have used the `FromScratch.py` file to train the model on CHTC and the predicted files were being uploaded to the neptune. From DBPDOE-389 I don't see the images being uploaded to neptune. DBPDOE-390 is when I started training from the local machine (since it was just debugging we did not want to use the CHTC) and also started using the `ScriptForLocalRun.py`. From then on I don't see the predicted images being uploaded to neptune. I need to figure out where the predicted images are written. 
+
+* check output_path 
+* check source_path 
+* check output_directory  
+
+
+* **DBPDOE-463:**
+
+This is the error I get in this run, 
+
+`ValueError                                Traceback (most recent call last)
+File ~var/lib/condor/execute/slot1/dir_3819680/ScriptForLocalRun.py:449
+    447 start = time.time()
+    448 # Start Training
+--> 449 model.train(epochs=number_of_epochs,
+    450             batch_size=batch_size,
+    451             train_generator=train_generator,
+    452             val_generator=val_generator,
+    453             model_path=model_path,
+    454             model_name=model_name,
+    455             loss=loss_function,
+    456             metrics=metrics,
+    457             optimizer=optimizer,
+    458             learning_rate=learning_rate,
+    459             ckpt_period=checkpointing_period,
+    460             save_best_ckpt_only=save_best_only,
+    461             ckpt_path=last_ckpt_path, neptune_run=utils.neptune_run)
+    462 #print(_weighted_binary_crossentropy)
+    463 print('Training successfully completed!')
+
+File ~var/lib/condor/execute/slot1/dir_3819680/utils.py:609, in Unet3D.train(self, epochs, batch_size, train_generator, val_generator, model_path, model_name, optimizer, learning_rate, loss, metrics, ckpt_period, save_best_ckpt_only, ckpt_path, neptune_run)
+    594 # Open the CSV file in append mode 
+    595 # with open(csv_out_name, 'r') as csvfile:
+    596 #     reader = csv.DictReader(csvfile)
+   (...)
+    606 
+    607 # Log loss values to Neptune
+    608 if neptune_run is not None:
+--> 609     neptune_run['loss'].log(loss_history)
+    610     neptune_run['val_loss'].log(val_loss_history)
+    611     neptune_run['epoch'].log(epoch_history)
+
+File ~usr/local/lib/python3.10/dist-packages/neptune/handler.py:88, in check_protected_paths.<locals>.inner_fun(self, *args, **kwargs)
+     85 @wraps(fun)
+     86 def inner_fun(self: "Handler", *args, **kwargs):
+     87     validate_path_not_protected(self._path, self)
+---> 88     return fun(self, *args, **kwargs)
+
+File ~usr/local/lib/python3.10/dist-packages/neptune/handler.py:321, in Handler.log(self, value, step, timestamp, wait, **kwargs)
+    319         first_value = next(iter(value))
+    320     else:
+--> 321         raise ValueError("Cannot deduce value type: `value` cannot be empty")
+    322 else:
+    323     first_value = value
+
+ValueError: Cannot deduce value type: `value` cannot be empty`
+
+
+* **DBPDOE-464:**
+
+In the `utils.py` the following code, 
+`history_callback = self.model.fit(train_generator,
+                       validation_data=val_generator,
+                       #validation_steps=math.floor(len(val_generator)/batch_size),
+                       validation_steps=max(1,math.floor(len(val_generator)/batch_size)),
+                       epochs=epochs,
+                       callbacks=[neptune_callback]) #callbacks=[neptune_callback, csv_logger])
+                       #callbacks=[csv_logger,
+                                 #model_ckpt,
+                                  #sample_img])
+
+        last_ckpt_name = ckpt_dir + '/' + model_name + '_last.hdf5'
+        self.model.save_weights(last_ckpt_name)
+       
+        loss_history = []
+        val_loss_history = []
+        epoch_history = []
+        dice_coefficient_history = []
+        val_dice_coefficient_history = []
+
+
+        # Open the CSV file in append mode 
+        # with open(csv_out_name, 'r') as csvfile:
+        #     reader = csv.DictReader(csvfile)
+        #     for row in reader:
+        #         loss_history.append(float(row['loss']))
+        #         val_loss_history.append(float(row['val_loss']))
+        #         epoch_history.append(int(row['epoch']))
+        #         dice_coefficient_history.append(float(row['dice_coefficient']))
+        #         val_dice_coefficient_history.append(float(row['val_dice_coefficient']))
+        #         #print(row)
+
+
+
+        # Log loss values to Neptune
+        if neptune_run is not None:
+            neptune_run['loss'].log(loss_history)
+            neptune_run['val_loss'].log(val_loss_history)
+            neptune_run['epoch'].log(epoch_history)
+            neptune_run['dice_coefficient'].log(dice_coefficient_history)
+            neptune_run['val_dice_coefficient'].log(val_dice_coefficient_history)`
+
+
+I don't think I need to log the values separately. Hence the I am going to comment out the following, 
+
+`# Log loss values to Neptune
+        if neptune_run is not None:
+            neptune_run['loss'].log(loss_history)
+            neptune_run['val_loss'].log(val_loss_history)
+            neptune_run['epoch'].log(epoch_history)
+            neptune_run['dice_coefficient'].log(dice_coefficient_history)
+            neptune_run['val_dice_coefficient'].log(val_dice_coefficient_history)`
+
+Since we already have the neptune callback in the `model.fit` I think it should work?
+
+
+**Output:**
+
+Now the predictions are getting saved :) Finally back to where I was before. Now I can try adding the weight maps and see how it goes. 
 

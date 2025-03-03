@@ -547,11 +547,11 @@ class Unet3D:
         if not os.path.exists(ckpt_dir):
             os.makedirs(ckpt_dir)
 
-        csv_out_name = log_dir + '/training_evaluation.csv'
-        if ckpt_path is None:
-            csv_logger = CSVLogger(csv_out_name)
-        else:
-            csv_logger = CSVLogger(csv_out_name, append=True)
+        # csv_out_name = log_dir + '/training_evaluation.csv'
+        # if ckpt_path is None:
+        #     csv_logger = CSVLogger(csv_out_name)
+        # else:
+        #     csv_logger = CSVLogger(csv_out_name, append=True)
 
         if save_best_ckpt_only:
             ckpt_name = ckpt_dir + '/' + model_name + '.hdf5'
@@ -576,7 +576,7 @@ class Unet3D:
                        #validation_steps=math.floor(len(val_generator)/batch_size),
                        validation_steps=max(1,math.floor(len(val_generator)/batch_size)),
                        epochs=epochs,
-                       callbacks=[neptune_callback, csv_logger])
+                       callbacks=[neptune_callback]) #callbacks=[neptune_callback, csv_logger])
                        #callbacks=[csv_logger,
                                  #model_ckpt,
                                   #sample_img])
@@ -584,33 +584,33 @@ class Unet3D:
         last_ckpt_name = ckpt_dir + '/' + model_name + '_last.hdf5'
         self.model.save_weights(last_ckpt_name)
        
-        loss_history = []
-        val_loss_history = []
-        epoch_history = []
-        dice_coefficient_history = []
-        val_dice_coefficient_history = []
+        # loss_history = []
+        # val_loss_history = []
+        # epoch_history = []
+        # dice_coefficient_history = []
+        # val_dice_coefficient_history = []
 
 
         # Open the CSV file in append mode 
-        with open(csv_out_name, 'r') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                loss_history.append(float(row['loss']))
-                val_loss_history.append(float(row['val_loss']))
-                epoch_history.append(int(row['epoch']))
-                dice_coefficient_history.append(float(row['dice_coefficient']))
-                val_dice_coefficient_history.append(float(row['val_dice_coefficient']))
-                #print(row)
+        # with open(csv_out_name, 'r') as csvfile:
+        #     reader = csv.DictReader(csvfile)
+        #     for row in reader:
+        #         loss_history.append(float(row['loss']))
+        #         val_loss_history.append(float(row['val_loss']))
+        #         epoch_history.append(int(row['epoch']))
+        #         dice_coefficient_history.append(float(row['dice_coefficient']))
+        #         val_dice_coefficient_history.append(float(row['val_dice_coefficient']))
+        #         #print(row)
 
 
 
         # Log loss values to Neptune
-        if neptune_run is not None:
-            neptune_run['loss'].log(loss_history)
-            neptune_run['val_loss'].log(val_loss_history)
-            neptune_run['epoch'].log(epoch_history)
-            neptune_run['dice_coefficient'].log(dice_coefficient_history)
-            neptune_run['val_dice_coefficient'].log(val_dice_coefficient_history)
+        # if neptune_run is not None:
+        #     neptune_run['loss'].log(loss_history)
+        #     neptune_run['val_loss'].log(val_loss_history)
+        #     neptune_run['epoch'].log(epoch_history)
+        #     neptune_run['dice_coefficient'].log(dice_coefficient_history)
+        #     neptune_run['val_dice_coefficient'].log(val_dice_coefficient_history)
 
     def _min_max_scaling(self, data):
         n = data - np.min(data)

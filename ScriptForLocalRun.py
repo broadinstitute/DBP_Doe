@@ -186,7 +186,7 @@ patch_size = (64,64,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'randomly crop to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
-validation_split_in_percent = 20 #@param{type:"number"}
+validation_split_in_percent = 50 #@param{type:"number"}
 downscaling_in_xy =  1#@param {type:"number"} # in pixels
 
 binary_target = True #@param {type:"boolean"}
@@ -412,6 +412,10 @@ val_generator = utils.MultiPageTiffGenerator(training_source,
                                        downscale=downscaling_in_xy,
                                        binary_target=binary_target)
 
+print(f"The length of the training generator is {len(train_generator)}")
+print(f"The length of the validation generator is {len(val_generator)}")
+print(f"Value of val_split is {val_generator.val_split}")
+print(f"Value of validation_split_in_percent is {validation_split_in_percent}")
 
 if apply_data_augmentation:
   print('Data augmentation enabled.')
@@ -548,6 +552,8 @@ if not os.path.exists(output_directory):
     os.makedirs(output_directory)
 
 output_path = os.path.join(output_directory, os.path.splitext(os.path.basename(source_path))[0] + '_predicted.tif')
+print(f"This is the output path: {output_path}")
+
 #@markdown ###Prediction parameters:
 
 binary_target = True #@param {type:"boolean"}
