@@ -101,6 +101,7 @@ class MultiPageTiffGenerator(Sequence):
     def __init__(self,
                  source_path,
                  target_path,
+                 wmap_path,
                  batch_size=1,
                  shape=(128,128,32,1),
                  augment=False,
@@ -117,6 +118,7 @@ class MultiPageTiffGenerator(Sequence):
         if os.path.isfile(source_path):
             self.dir_flag = False
             self.source = tifffile.imread(source_path)
+            self.wmap = tifffile.imread(wmap_path)
             if binary_target:
                 self.target = tifffile.imread(target_path).astype(bool)
             else:
@@ -126,9 +128,11 @@ class MultiPageTiffGenerator(Sequence):
             self.dir_flag = True
             self.source_dir_list = glob(os.path.join(source_path, '*'))
             self.target_dir_list = glob(os.path.join(target_path, '*'))
+            self.wmap_dir_list = glob(os.path.join(wmap_path, '*'))
 
             self.source_dir_list.sort()
             self.target_dir_list.sort()
+            self.wmap_dir_list.sort()
 
         self.shape = shape
         self.batch_size = batch_size
@@ -412,6 +416,16 @@ def weighted_binary_crossentropy(zero_weight, one_weight):
 
         weight_vector = y_true*one_weight+(1.-y_true)*zero_weight
         weighted_binary_crossentropy = weight_vector*binary_crossentropy
+
+        return K.mean(weighted_binary_crossentropy)
+
+    return _weighted_binary_crossentropy
+
+def pixelwise_weighted_binary_crossentropy(wmap):
+    def _weighted_binary_crossentropy(y_true, y_pred):
+        binary_crossentropy = K.binary_crossentropy(y_true, y_pred)
+
+        weighted_binary_crossentropy = wmap*binary_crossentropy
 
         return K.mean(weighted_binary_crossentropy)
 

@@ -532,3 +532,14 @@ Since we already have the neptune callback in the `model.fit` I think it should 
 
 Now the predictions are getting saved :) Finally back to where I was before. Now I can try adding the weight maps and see how it goes. 
 
+* **DBPDOE-465:**
+Set a run with 30 epochs (variables_opt1.txt) to see how a smaller run goes. 
+
+* **DBPDOE-466:**
+Set a run with parameters described in variables.txt to see the predicted images and add the weight maps as the next step. 
+
+Made a new branch called `AddingWeightmap` to add the changes in the script file to include the weight map. 
+
+Beth added a new function for the loss function to calculate the loss function based on the loss function. 
+
+
