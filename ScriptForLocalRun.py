@@ -141,8 +141,6 @@ parser.add_argument("--training_source", type=str, required=False)
 
 parser.add_argument("--training_target", type=str, required=False)
 
-parser.add_argument("--training_wmap", type=str, required=False)
-
 parser.add_argument("--model_path", type=str, required=False)
 
 parser.add_argument("--testing_source", type=str, required=False)
@@ -164,7 +162,6 @@ args = parser.parse_args()
 #@markdown ###Path to training data:
 training_source = args.training_source #@param {type:"string"}
 training_target = args.training_target #@param {type:"string"}
-training_weightmap = args.training_wmap 
 
 #@markdown ---
 
@@ -185,11 +182,11 @@ use_default_advanced_parameters = False #@param {type:"boolean"}
 #@markdown <font size = 3>If not, please change:
 
 batch_size = args.batch_size #@param {type:"number"}
-patch_size = (128,128,8) #@param {type:"number"} # in pixels
+patch_size = (64,64,8) #@param {type:"number"} # in pixels
 training_shape = patch_size + (1,)
 image_pre_processing = 'randomly crop to patch_size' #@param ["randomly crop to patch_size", "resize to patch_size"]
 
-validation_split_in_percent = 20 #@param{type:"number"}
+validation_split_in_percent = 50 #@param{type:"number"}
 downscaling_in_xy =  1#@param {type:"number"} # in pixels
 
 binary_target = True #@param {type:"boolean"}
@@ -227,6 +224,7 @@ save_best_only = False #@param {type:"boolean"}
 
 #@markdown ###Resume training
 resume_training = False #@param {type:"boolean"}
+
 
 
 pretrained_model_choice = "Model_from_file" #@param ["Model_from_file", "bioimageio_model"]
@@ -305,7 +303,6 @@ else:
 # Save model parameters
 params =  {'training_source': training_source,
            'training_target': training_target,
-           'training_weightmap':training_weightmap,
            'model_name': model_name,
            'model_path': model_path,
            'number_of_epochs': number_of_epochs,
@@ -394,7 +391,6 @@ else:
 
 train_generator = utils.MultiPageTiffGenerator(training_source,
                                          training_target,
-                                         training_weightmap,
                                          batch_size=batch_size,
                                          shape=training_shape,
                                          augment=apply_data_augmentation,
@@ -408,7 +404,6 @@ train_generator = utils.MultiPageTiffGenerator(training_source,
 
 val_generator = utils.MultiPageTiffGenerator(training_source,
                                        training_target,
-                                       training_weightmap,
                                        batch_size=batch_size,
                                        shape=training_shape,
                                        val_split=validation_split_in_percent/100,

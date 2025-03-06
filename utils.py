@@ -101,7 +101,6 @@ class MultiPageTiffGenerator(Sequence):
     def __init__(self,
                  source_path,
                  target_path,
-                 wmap_path,
                  batch_size=1,
                  shape=(128,128,32,1),
                  augment=False,
@@ -118,7 +117,6 @@ class MultiPageTiffGenerator(Sequence):
         if os.path.isfile(source_path):
             self.dir_flag = False
             self.source = tifffile.imread(source_path)
-            self.wmap = tifffile.imread(wmap_path)
             if binary_target:
                 self.target = tifffile.imread(target_path).astype(bool)
             else:
