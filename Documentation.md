@@ -1,3 +1,16 @@
+### Segmentation of Neurites 
+The aim of this project is to segment the neurites from the 3D images of the Airy scan images of Drosophila neurites. The collaborators were using Imaris to manually segment the neurites. So we received the raw images and the masks which were generated using Imaris. Initially the project was carried out by Mario and the details of the experiments are in this [file.](https://docs.google.com/document/d/12XiiOZneT7Y8peZcVNAQmWbzQpP11TD4bFa00d91CJs/edit?usp=drive_link). Link to the [Google folder.](https://drive.google.com/drive/folders/185kcyXrwQRtugi2CSmBH7S29uu2cgjzj)
+
+I tried to use a tool APP (details of the paper are in the document linked here) which Mario has tried to see if altering the parameters helped. Details of the parameters are linked [here.](https://docs.google.com/document/d/1qXLjTghT5RDeixhsCw1ibhmiC1gLLy8_Cs0kE93WZPc/edit?tab=t.0)
+
+[Link](https://github.com/broadinstitute/ssivagur/discussions/15) to the GitHub Disucssions for this project. 
+
+[Link](https://github.com/broadinstitute/DBP_Doe) to the GitHub repo. 
+
+#### Received new batch of images 
+
+(Currently all these images are in `imaging analysis`)
+
 New images from Doe's lab were shared through FTP and they were transferred to the `imaging_dropbox`. The images were transferred to `\2022_09_21_COBA_ChrisDoe_Lab\NewBatch` in `imaging_analysis`. 
 The details of the files, 
 
@@ -19,6 +32,7 @@ The files that were in `imaging_dropbox`
 ```
 
 Some of the files were converted to tiff format and saved in the `imaging_analysis` hence we find difference in the folder size. 
+
 
 
 Out of the many images that they shared, only some of the files (the files in Z:\2022_09_21_COBA_ChrisDoe_Lab\NewBatch\doelab\dbd_A08a_Dendrite_Project\_Data_for_2022_Paper\060221_-_dbd_hid,_A08a_dendrites_for_Paper\Trial_1\) were compatible with ImageJ Bioformats. Other images were having issues opening in ImageJ hence the initial plan is to include ony these images for training. 
